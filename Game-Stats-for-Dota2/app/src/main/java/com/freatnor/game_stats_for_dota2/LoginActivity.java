@@ -14,11 +14,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
 
-        final WebView webView = (WebView) findViewById(R.id.webview);
+        WebView webView = (WebView) findViewById(R.id.webview);
         webView.getSettings().setJavaScriptEnabled(true);
 
-        final LoginActivity activity = this;
+        //final LoginActivity activity = this;
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -31,7 +32,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (Url.getAuthority().equals(REALM_PARAM.toLowerCase())) {
                     // That means that authentication is finished and the url contains user's id.
-                    webView.stopLoading();
+                    view.stopLoading();
 
                     // Extracts user id.
                     Uri userAccountUrl = Uri.parse(Url.getQueryParameter("openid.identity"));
@@ -41,7 +42,6 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        setContentView(webView);
 
         // Constructing openid url request
         String url = "https://steamcommunity.com/openid/login?" +
