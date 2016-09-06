@@ -13,7 +13,10 @@ import com.freatnor.game_stats_for_dota2.Player;
 import com.freatnor.game_stats_for_dota2.R;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Jonathan Taylor on 9/1/16.
@@ -42,11 +45,20 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
         });
         holder.setHeroName(mPlayers.get(position).mLastPlayedMatch.mHeroName);
         holder.setHeroPortrait(mPlayers.get(position).mLastPlayedMatch.mHeroPortraitUrl);
+        holder.setItemIcon(mPlayers.get(position).mLastPlayedMatch.mItemIconUrl);
 
         holder.setPlayerPortrait(mPlayers.get(position).mImageUrl);
         holder.setPlayername(mPlayers.get(position).mName);
+        //creating and setting the last played date for the player
+        Date lastPlayed = new Date(mPlayers.get(position).mLastPlayed);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
+        holder.setLastPlayed(sdf.format(lastPlayed));
 
         holder.setResult(mPlayers.get(position).mLastPlayedMatch.mIsWin);
+        holder.setKDA(String.format("%d/%d/%d", mPlayers.get(position).mLastPlayedMatch.mKills,
+                mPlayers.get(position).mLastPlayedMatch.mAssists, mPlayers.get(position).mLastPlayedMatch.mDeaths));
+        holder.setMatchDuration(String.format("%d Minutes and %d Seconds", (mPlayers.get(position).mLastPlayedMatch.mDuration / 60),
+                (mPlayers.get(position).mLastPlayedMatch.mDuration % 60)));
     }
 
     @Override
