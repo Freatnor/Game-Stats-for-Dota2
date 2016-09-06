@@ -1,5 +1,6 @@
 package com.freatnor.game_stats_for_dota2.presenters;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,8 +37,44 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
     }
 
     @Override
-    public void onBindViewHolder(MatchDetailsPlayerViewHolder holder, int position) {
-        
+    public void onBindViewHolder(final MatchDetailsPlayerViewHolder holder, int position) {
+        MatchPlayer player = mPlayers.get(position);
+
+        //TODO update for correct access methods...
+        holder.setHeroName(player.getHeroName());
+        holder.setPlayerName(player.getPlayerName());
+        holder.setKills(String.valueOf(player.getKills()));
+        holder.setDeaths(String.valueOf(player.getDeaths()));
+        holder.setAssists(String.valueOf(player.getAssists()));
+        holder.setNetGold(String.format("%dG", player.getNetGold));
+
+        //set the images
+        holder.setHeroPortrait(player.getHeroPortraitUrl());
+        holder.setItemIcon1(player.getItemIcon1);
+        holder.setItemIcon2(player.getItemIcon2);
+        holder.setItemIcon3(player.getItemIcon3);
+        holder.setItemIcon4(player.getItemIcon4);
+        holder.setItemIcon5(player.getItemIcon5);
+        holder.setItemIcon6(player.getItemIcon6);
+
+        holder.setOverviewOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!holder.itemsSectionIsToggled()){
+                    holder.toggleItemsSection();
+                }
+                else{
+                    //TODO add in the interface for getting to the player details
+                }
+            }
+        });
+
+        holder.setItemsSectionOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO interface for going to player details
+            }
+        });
     }
 
     @Override
