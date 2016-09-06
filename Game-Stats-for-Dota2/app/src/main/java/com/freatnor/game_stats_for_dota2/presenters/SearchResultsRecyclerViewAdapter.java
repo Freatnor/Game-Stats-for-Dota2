@@ -33,8 +33,20 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
     }
 
     @Override
-    public void onBindViewHolder(SearchResultsViewHolder holder, int position) {
+    public void onBindViewHolder(final SearchResultsViewHolder holder, int position) {
+        holder.setTopOnClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                holder.toggleBottom();
+            }
+        });
+        holder.setHeroName(mPlayers.get(position).mLastPlayedMatch.mHeroName);
+        holder.setHeroPortrait(mPlayers.get(position).mLastPlayedMatch.mHeroPortraitUrl);
 
+        holder.setPlayerPortrait(mPlayers.get(position).mImageUrl);
+        holder.setPlayername(mPlayers.get(position).mName);
+
+        holder.setResult(mPlayers.get(position).mLastPlayedMatch.mIsWin);
     }
 
     @Override

@@ -5,11 +5,11 @@ package com.freatnor.game_stats_for_dota2;
  * dummy class for use in the search results adapter
  */
 public class Player {
-    String mImageUrl;
-    String mName;
-    int mLastPlayed;
+    public String mImageUrl;
+    public String mName;
+    public int mLastPlayed;
 
-    Match mLastPlayedMatch;
+    public Match mLastPlayedMatch;
 
     int mPlayerId;
 
@@ -21,26 +21,3 @@ public class Player {
     }
 }
 
-class Match{
-    boolean mIsWin;
-    String mHeroPortraitUrl;
-    String mHeroName;
-    String mItemIconUrl;
-    int mDuration;
-    int mKills;
-    int mDeaths;
-    int mAssists;
-
-    int mMatchId;
-
-    public Match(boolean isWin, String heroPortraitUrl, String heroName, String itemIconUrl, int duration, int kills, int deaths, int assists) {
-        mIsWin = isWin;
-        mHeroPortraitUrl = heroPortraitUrl;
-        mHeroName = heroName;
-        mItemIconUrl = itemIconUrl;
-        mDuration = duration;
-        mKills = kills;
-        mDeaths = deaths;
-        mAssists = assists;
-    }
-}
