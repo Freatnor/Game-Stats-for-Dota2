@@ -223,7 +223,7 @@
             </LinearLayout>
         </LinearLayout>
         <android.support.v7.widget.CardView
-            android:id="@+id/dire_card"
+            android:id="@+id/radiant_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone">
@@ -327,7 +327,7 @@
             </LinearLayout>
         </LinearLayout>
         <android.support.v7.widget.CardView
-            android:id="@+id/radiant_card"
+            android:id="@+id/dire_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone">
