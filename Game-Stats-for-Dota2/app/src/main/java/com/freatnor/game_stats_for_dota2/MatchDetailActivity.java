@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.freatnor.game_stats_for_dota2.presenters.MatchDetailsPlayerRecyclerViewAdapter;
@@ -21,6 +23,9 @@ public class MatchDetailActivity extends AppCompatActivity {
     private RecyclerView mRadiantRecyclerView;
     private RecyclerView mDireRecyclerView;
 
+    private LinearLayout mDireOverview;
+    private LinearLayout mRadiantOverview;
+
     private CardView mDireCard;
     private CardView mRadiantCard;
 
@@ -30,6 +35,18 @@ public class MatchDetailActivity extends AppCompatActivity {
     private TextView mMode;
     private TextView mDuration;
     private TextView mMatchStart;
+
+    //radiant overview
+    private TextView mRadiantKills;
+    private TextView mRadiantDeaths;
+    private TextView mRadiantAssits;
+    private TextView mRadiantTotalGold;
+
+    //dire overview
+    private TextView mDireKills;
+    private TextView mDireDeaths;
+    private TextView mDireAssists;
+    private TextView mDireTotalGold;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +64,13 @@ public class MatchDetailActivity extends AppCompatActivity {
         mRadiantRecyclerView = (RecyclerView) findViewById(R.id.radiant_match_detail_recycler);
 
 
+        mDireCard = (CardView) findViewById(R.id.dire_card);
+        mRadiantCard = (CardView) findViewById(R.id.radiant_card);
+
+        mDireOverview = (LinearLayout) findViewById(R.id.dire_match_overview);
+        mRadiantOverview = (LinearLayout) findViewById(R.id.radiant_match_overview);
+
+        //TODO radiant and dire overview textviews
     }
 
     @Override
@@ -76,7 +100,30 @@ public class MatchDetailActivity extends AppCompatActivity {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
         mMatchStart.setText(sdf.format(start));
 
-        //setting dummy data in the
+        //OnClicks for toggling open or closed the recycler views
+        mDireOverview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mDireCard.getVisibility() == View.VISIBLE){
+                    mDireCard.setVisibility(View.GONE);
+                }
+                else {
+                    mDireCard.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        mRadiantOverview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mRadiantCard.getVisibility() == View.VISIBLE){
+                    mRadiantCard.setVisibility(View.GONE);
+                }
+                else {
+                    mRadiantCard.setVisibility(View.VISIBLE);
+                }
+            }
+        });
 
         mDireRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(players, MatchDetailsPlayerRecyclerViewAdapter.DIRE));
         mRadiantRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(players, MatchDetailsPlayerRecyclerViewAdapter.RADIANT));

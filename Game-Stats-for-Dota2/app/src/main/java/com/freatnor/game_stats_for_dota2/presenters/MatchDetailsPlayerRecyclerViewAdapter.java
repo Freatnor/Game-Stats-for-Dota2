@@ -72,6 +72,7 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.setKills(String.valueOf(player.mLastPlayedMatch.mKills));
         holder.setDeaths(String.valueOf(player.mLastPlayedMatch.mDeaths));
         holder.setAssists(String.valueOf(player.mLastPlayedMatch.mAssists));
+        holder.setNetGold(String.format("%dG", 234132));
 
         holder.setHeroPortrait(player.mLastPlayedMatch.mHeroPortraitUrl);
         holder.setItemIcon1(player.mLastPlayedMatch.mItemIconUrl);
@@ -103,7 +104,7 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mPlayers.size();
     }
 }
 
