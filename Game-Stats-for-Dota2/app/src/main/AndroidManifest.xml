@@ -20,6 +20,8 @@
         </activity>
         <activity android:name=".MatchDetailActivity">
         </activity>
+        <activity android:name=".PlayerDetailActivity">
+        </activity>
     </application>
 
 </manifest>
