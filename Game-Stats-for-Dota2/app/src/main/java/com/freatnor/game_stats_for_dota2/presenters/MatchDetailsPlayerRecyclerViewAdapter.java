@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.freatnor.game_stats_for_dota2.Player;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchPlayer;
 import com.freatnor.game_stats_for_dota2.R;
 import com.squareup.picasso.Picasso;
@@ -24,11 +25,14 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
     public static final int DIRE = 2;
 
     //TODO change to list of real Player objects in the future
-    private List<MatchPlayer> mPlayers;
+    private List<Player> mPlayers;
     //For if there's any parts distinct between dire and radiant
     private int mSide;
 
-
+    public MatchDetailsPlayerRecyclerViewAdapter(List<Player> players, int side) {
+        mPlayers = players;
+        mSide = side;
+    }
 
     @Override
     public MatchDetailsPlayerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -38,10 +42,10 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(final MatchDetailsPlayerViewHolder holder, int position) {
-        MatchPlayer player = mPlayers.get(position);
+        Player player = mPlayers.get(position);
 
         //TODO update for correct access methods...
-        holder.setHeroName(player.getHeroName());
+        /*holder.setHeroName(player.getHeroName());
         holder.setPlayerName(player.getPlayerName());
         holder.setKills(String.valueOf(player.getKills()));
         holder.setDeaths(String.valueOf(player.getDeaths()));
@@ -55,7 +59,24 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.setItemIcon3(player.getItemIcon3);
         holder.setItemIcon4(player.getItemIcon4);
         holder.setItemIcon5(player.getItemIcon5);
-        holder.setItemIcon6(player.getItemIcon6);
+        holder.setItemIcon6(player.getItemIcon6);*/
+
+
+        //TEST CODE
+        holder.setHeroName(player.mLastPlayedMatch.mHeroName);
+        holder.setPlayerName(player.mName);
+
+        holder.setKills(String.valueOf(player.mLastPlayedMatch.mKills));
+        holder.setDeaths(String.valueOf(player.mLastPlayedMatch.mDeaths));
+        holder.setAssists(String.valueOf(player.mLastPlayedMatch.mAssists));
+
+        holder.setHeroPortrait(player.mLastPlayedMatch.mHeroPortraitUrl);
+        holder.setItemIcon1(player.mLastPlayedMatch.mItemIconUrl);
+        holder.setItemIcon2(player.mLastPlayedMatch.mItemIconUrl);
+        holder.setItemIcon3(player.mLastPlayedMatch.mItemIconUrl);
+        holder.setItemIcon4(player.mLastPlayedMatch.mItemIconUrl);
+        holder.setItemIcon5(player.mLastPlayedMatch.mItemIconUrl);
+        holder.setItemIcon6(player.mLastPlayedMatch.mItemIconUrl);
 
         holder.setOverviewOnClickListener(new View.OnClickListener() {
             @Override
