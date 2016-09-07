@@ -37,12 +37,27 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
 
     @Override
     public void onBindViewHolder(final SearchResultsViewHolder holder, int position) {
+        //OnClick listener that either opens the bottom section or gives player object to callback
         holder.setTopOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                holder.toggleBottom();
+                if(!holder.bottomIsToggled()){
+                    holder.toggleBottom();
+                }
+                else{
+
+                }
             }
         });
+        holder.setBottomOnClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+
+        //TODO change these to use correct player object format from API
         holder.setHeroName(mPlayers.get(position).mLastPlayedMatch.mHeroName);
         holder.setHeroPortrait(mPlayers.get(position).mLastPlayedMatch.mHeroPortraitUrl);
         holder.setItemIcon(mPlayers.get(position).mLastPlayedMatch.mItemIconUrl);
@@ -171,8 +186,9 @@ class SearchResultsViewHolder extends RecyclerView.ViewHolder{
         mTopLayout.setOnClickListener(listener);
     }
 
-    public void setBottomOnClick(){
+    public void setBottomOnClick(View.OnClickListener listener){
         //TODO add method to add onclick to go to the match activity
+        mBottomLayout.setOnClickListener(listener);
     }
 
 }
