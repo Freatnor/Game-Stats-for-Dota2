@@ -2,6 +2,7 @@ package com.freatnor.game_stats_for_dota2.presenters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import java.util.List;
  * Created by Jonathan Taylor on 9/6/16.
  */
 public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<MatchDetailsPlayerViewHolder> {
+    private static final String TAG = "MatchDetailsAdapter";
 
     public static final int RADIANT = 1;
     public static final int DIRE = 2;
@@ -43,6 +45,7 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(final MatchDetailsPlayerViewHolder holder, int position) {
         Player player = mPlayers.get(position);
+        Log.d(TAG, "onBindViewHolder: Binding player " + player.mName);
 
         //TODO update for correct access methods...
         /*holder.setHeroName(player.getHeroName());
