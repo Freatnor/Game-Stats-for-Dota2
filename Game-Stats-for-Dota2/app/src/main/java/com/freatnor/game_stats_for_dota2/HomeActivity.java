@@ -1,16 +1,18 @@
 package com.freatnor.game_stats_for_dota2;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.freatnor.game_stats_for_dota2.interfaces.MatchCallback;
+import com.freatnor.game_stats_for_dota2.interfaces.PlayerCallback;
 import com.freatnor.game_stats_for_dota2.presenters.SearchResultsRecyclerViewAdapter;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements MatchCallback, PlayerCallback{
 
     private SearchResultsRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -40,8 +42,22 @@ public class HomeActivity extends AppCompatActivity {
                 "http://cdn.dota2.com/apps/dota2/images/items/invis_sword_lg.png", 3478, 3, 1, 24)));
 
 
-        mAdapter = new SearchResultsRecyclerViewAdapter(players);
+        mAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+    }
+
+    @Override
+    public void matchSelected(long matchId) {
+        Intent intent = new Intent(HomeActivity.this, MatchDetailActivity.class);
+        intent.putExtra("matchId", matchId);
+        startActivity(intent);
+    }
+
+    @Override
+    public void playerSelected(int playerId) {
+//        Intent intent = new Intent(HomeActivity.this, PlayerDetailActivity.class);
+//        intent.putExtra("playerId", playerId);
+//        startActivity(intent);
     }
 }

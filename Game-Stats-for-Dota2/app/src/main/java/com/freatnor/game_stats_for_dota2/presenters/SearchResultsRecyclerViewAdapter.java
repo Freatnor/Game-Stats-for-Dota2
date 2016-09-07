@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.freatnor.game_stats_for_dota2.Player;
 import com.freatnor.game_stats_for_dota2.R;
+import com.freatnor.game_stats_for_dota2.interfaces.MatchCallback;
+import com.freatnor.game_stats_for_dota2.interfaces.PlayerCallback;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
@@ -25,8 +27,13 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
 
     private List<Player> mPlayers;
 
-    public SearchResultsRecyclerViewAdapter(List<Player> players) {
+    private MatchCallback mMatchCallback;
+    private PlayerCallback mPlayerCallback;
+
+    public SearchResultsRecyclerViewAdapter(List<Player> players, MatchCallback matchCallback, PlayerCallback playerCallback) {
         mPlayers = players;
+        mMatchCallback = matchCallback;
+        mPlayerCallback = playerCallback;
     }
 
     @Override
@@ -37,7 +44,10 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
 
     @Override
     public void onBindViewHolder(final SearchResultsViewHolder holder, int position) {
+        Player player = mPlayers.get(position);
+
         //OnClick listener that either opens the bottom section or gives player object to callback
+        //TODO change to correctly get the IDs
         holder.setTopOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -45,14 +55,20 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
                     holder.toggleBottom();
                 }
                 else{
+                    //mPlayerCallback.playerSelected(player.getId());
 
+                    //dummy ID
+                    mPlayerCallback.playerSelected(12448617);
                 }
             }
         });
         holder.setBottomOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                //mMatchCallback.matchSelected(player.getLatestMatch().getId());
 
+                //DummyID
+                mMatchCallback.matchSelected(2625097872l);
             }
         });
 
