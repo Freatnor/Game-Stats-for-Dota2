@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 
 /**
  * Created by Jonathan Taylor on 9/7/16.
@@ -78,5 +80,12 @@ public class PlayerDetailFragment extends Fragment{
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //TODO bind all the data
+
+        //Picasso load the player icon
+        Picasso.with(this.getContext()).load(mPlayer.mImageUrl).into(mPlayerIcon);
+
+        mPlayerName.setText(mPlayer.mName);
+        mPlayerID.setText(mPlayer.mPlayerId + "");
+        
     }
 }
