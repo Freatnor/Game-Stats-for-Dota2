@@ -56,8 +56,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
     @Override
     public void playerSelected(int playerId) {
-//        Intent intent = new Intent(HomeActivity.this, PlayerDetailActivity.class);
-//        intent.putExtra("playerId", playerId);
-//        startActivity(intent);
+        Intent intent = new Intent(HomeActivity.this, PlayerDetailActivity.class);
+        intent.putExtra("playerId", playerId);
+        startActivity(intent);
     }
 }
