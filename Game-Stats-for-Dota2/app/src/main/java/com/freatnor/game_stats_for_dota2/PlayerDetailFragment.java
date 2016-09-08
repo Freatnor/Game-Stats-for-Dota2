@@ -3,6 +3,7 @@ package com.freatnor.game_stats_for_dota2;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,8 @@ import com.squareup.picasso.Picasso;
  * Created by Jonathan Taylor on 9/7/16.
  */
 public class PlayerDetailFragment extends Fragment{
+
+    private static final String TAG = "PlayerDetailFragment";
 
     public static final int COMPETITIVE = 10;
     public static final int NORMAL = 20;
@@ -45,6 +48,7 @@ public class PlayerDetailFragment extends Fragment{
     //For the future
     private TextView mSoloMMR;
     private TextView mPartyMMR;
+
 
     public static PlayerDetailFragment getInstance(Player player, int gameTypeFlag){
         PlayerDetailFragment fragment = new PlayerDetailFragment();
@@ -82,10 +86,12 @@ public class PlayerDetailFragment extends Fragment{
         //TODO bind all the data
 
         //Picasso load the player icon
+        Log.d(TAG, "onViewCreated: player image url " + mPlayer.mImageUrl);
         Picasso.with(this.getContext()).load(mPlayer.mImageUrl).into(mPlayerIcon);
 
         mPlayerName.setText(mPlayer.mName);
         mPlayerID.setText(mPlayer.mPlayerId + "");
-        
+
     }
+
 }
