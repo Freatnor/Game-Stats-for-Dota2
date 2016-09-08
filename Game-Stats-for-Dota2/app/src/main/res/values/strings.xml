@@ -4,4 +4,6 @@
     <string name="duration">Duration:</string>
     <string name="date_played">Date Played:</string>
     <string name="followed_players">Followed Players</string>
+    <string name="player_id_key">playerId</string>
+    <string name="match_id_key">matchId</string>
 </resources>

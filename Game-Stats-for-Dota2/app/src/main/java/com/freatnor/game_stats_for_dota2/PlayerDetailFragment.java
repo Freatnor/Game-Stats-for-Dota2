@@ -44,7 +44,7 @@ public class PlayerDetailFragment extends Fragment{
     private TextView mSoloMMR;
     private TextView mPartyMMR;
 
-    public PlayerDetailFragment getInstance(Player player, int gameTypeFlag){
+    public static PlayerDetailFragment getInstance(Player player, int gameTypeFlag){
         PlayerDetailFragment fragment = new PlayerDetailFragment();
         fragment.mPlayer = player;
         fragment.mGameTypeFlag = gameTypeFlag;

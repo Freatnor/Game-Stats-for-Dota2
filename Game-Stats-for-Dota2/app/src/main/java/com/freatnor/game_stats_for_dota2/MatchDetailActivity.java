@@ -79,7 +79,7 @@ public class MatchDetailActivity extends AppCompatActivity {
 
         //TODO get match details from API based on matchID from intent
         Intent intent = getIntent();
-        mMatchId = intent.getIntExtra("MatchId", -1);
+        mMatchId = intent.getIntExtra(getString(R.string.match_id_key), -1);
         ///...
 
         //Dummy Data
