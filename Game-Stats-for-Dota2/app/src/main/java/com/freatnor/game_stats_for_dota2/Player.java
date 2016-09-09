@@ -11,13 +11,14 @@ public class Player {
 
     public Match mLastPlayedMatch;
 
-    int mPlayerId;
+    long mPlayerId;
 
-    public Player(String mImageUrl, String mName, int mLastPlayed, Match mLastPlayedMatch) {
+    public Player(String mImageUrl, String mName, int mLastPlayed, long playerId, Match mLastPlayedMatch) {
         this.mImageUrl = mImageUrl;
         this.mName = mName;
         this.mLastPlayed = mLastPlayed;
         this.mLastPlayedMatch = mLastPlayedMatch;
+        this.mPlayerId = playerId;
     }
 }
 

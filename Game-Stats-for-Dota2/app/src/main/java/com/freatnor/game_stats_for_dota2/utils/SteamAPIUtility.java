@@ -2,16 +2,25 @@ package com.freatnor.game_stats_for_dota2.utils;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.freatnor.game_stats_for_dota2.R;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistoryResults;
+
+import org.json.JSONObject;
 
 /**
  * Created by Jonathan Taylor on 9/8/16.
  */
 public class SteamAPIUtility  {
+    private static final String TAG = "SteamAPIUtility";
 
     //URL constants
     //Used for all but specific user lookups
@@ -52,7 +61,7 @@ public class SteamAPIUtility  {
         mRequestQueue = Volley.newRequestQueue(mContext);
     }
 
-    public SteamAPIUtility getInstance(Context context){
+    public static SteamAPIUtility getInstance(Context context){
         if(sInstance == null){
             sInstance = new SteamAPIUtility(context);
         }
@@ -60,6 +69,8 @@ public class SteamAPIUtility  {
     }
 
     public MatchHistoryResults getMatchHistoryForPlayer(long account_id){
+        String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
+                "&account_id=" + account_id;
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
                 {
@@ -73,14 +84,44 @@ public class SteamAPIUtility  {
                 {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d("Error.Response", response);
+                        Log.d(TAG, " getMatchHistoryForPlayer Error.Response");
+                        error.printStackTrace();
                     }
                 }
         );
 
 // add it to the RequestQueue
         mRequestQueue.add(getRequest);
+        return null;
     }
 
+    //TODO helper method to iterate through the matches
 
+
+    public MatchDetail getMatchDetail(long match_id){
+        String url = STEAM_API_BASE_URL + GET_MATCH_DETAILS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
+                "&match_id=" + match_id;
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        Log.d("Response", response.toString());
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, " getMatchDetail Error.Response");
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+// add it to the RequestQueue
+        mRequestQueue.add(getRequest);
+        return null;
+    }
 }

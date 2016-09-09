@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import com.freatnor.game_stats_for_dota2.interfaces.MatchCallback;
 import com.freatnor.game_stats_for_dota2.interfaces.PlayerCallback;
 import com.freatnor.game_stats_for_dota2.presenters.SearchResultsRecyclerViewAdapter;
+import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 
 import java.util.ArrayList;
 
@@ -35,11 +36,15 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         //Test Array
         ArrayList<Player> players = new ArrayList<>();
         players.add(new Player("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/0e/0e93c226aba775646e58357f188cbb687bc6a030_full.jpg",
-                "Freatnor", 1445123794, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/juggernaut_lg.png", "Juggernaut",
+                "Freatnor", 1445123794, 76561198029057889L, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/juggernaut_lg.png", "Juggernaut",
                 "http://cdn.dota2.com/apps/dota2/images/items/phase_boots_lg.png", 2777, 8, 4,11)));
         players.add(new Player("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fd/fdcf3b4cecda9b90cff20ab35c58374d35fb517c_medium.jpg",
-                "RME", 1445123794, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/slark_lg.png", "Slark",
+                "RME", 1445123794, 76561197972714345L, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/slark_lg.png", "Slark",
                 "http://cdn.dota2.com/apps/dota2/images/items/invis_sword_lg.png", 3478, 3, 1, 24)));
+
+        SteamAPIUtility utility = SteamAPIUtility.getInstance(this);
+        utility.getMatchHistoryForPlayer(players.get(0).mPlayerId);
+        utility.getMatchDetail(2625097872L);
 
 
         mAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
