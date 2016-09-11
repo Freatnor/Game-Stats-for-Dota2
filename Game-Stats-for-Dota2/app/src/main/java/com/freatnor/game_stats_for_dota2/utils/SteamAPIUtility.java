@@ -11,12 +11,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.freatnor.game_stats_for_dota2.R;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.MatchHistoryResults;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchSequenceHistory.MatchSequence;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchSequenceHistory.MatchSequenceResult;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Jonathan Taylor on 9/8/16.
@@ -83,12 +87,13 @@ public class SteamAPIUtility  {
     }
 
     //method to get the list of matches for a player. Pass in 0 to get the default number of matches
-    public MatchHistoryResults getMatchHistoryForPlayer(long account_id, int num_results){
+    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results,){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + ACCOUNT_ID + account_id;
         if(num_results > 0){
             url += "&" + MATCHES_REQEUSTED_NUMBER + num_results;
         }
+        final List<HistoryMatch> matchList = new ArrayList<>();
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
                 {
@@ -98,7 +103,15 @@ public class SteamAPIUtility  {
                         Log.d("Response", response.toString());
                         Gson gson = new Gson();
                         MatchHistoryResults.MatchHistory results = gson.fromJson(response.toString(), MatchHistoryResults.MatchHistory.class);
+                        matchList.addAll(results.getResult().getMatches());
                         Log.d(TAG, "onResponse: " + results.getResult().getNum_results());
+
+                        if(results.getResult().hasMorePagedResults()){
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1)
+                        }
+                        else{
+                            //TODO return the results in a callback
+                        }
                     }
                 },
                 new Response.ErrorListener()
@@ -117,6 +130,47 @@ public class SteamAPIUtility  {
     }
 
     //TODO helper method to iterate through the matches
+    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results, long latest_match_id){
+        String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
+                "&" + ACCOUNT_ID + account_id;
+        if(num_results > 0){
+            url += "&" + MATCHES_REQEUSTED_NUMBER + num_results;
+        }
+        if(latest_match_id < 1){
+            //return the results so far;
+        }
+        final List<HistoryMatch> matchList = new ArrayList<>();
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        Log.d("Response", response.toString());
+                        Gson gson = new Gson();
+                        MatchHistoryResults.MatchHistory results = gson.fromJson(response.toString(), MatchHistoryResults.MatchHistory.class);
+                        matchList.addAll(results.getResult().getMatches());
+                        Log.d(TAG, "onResponse: " + results.getResult().getNum_results());
+
+                        if(results.getResult().hasMorePagedResults()){
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1);
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, " getMatchHistoryForPlayer Error.Response");
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+// add it to the RequestQueue
+        mRequestQueue.add(getRequest);
+        return null;
+    }
 
 
     public MatchDetail getMatchDetail(long match_id){

@@ -63,6 +63,14 @@ public class MatchHistoryResults {
         this.matches = matches;
     }
 
+    public boolean hasMorePagedResults(){
+        return results_remaining > 0;
+    }
+
+    public long getLastMatchId(){
+        return matches.get(matches.size() - 1).getMatch_id();
+    }
+
     //parent wrapping object
     public class MatchHistory{
         private MatchHistoryResults result;
