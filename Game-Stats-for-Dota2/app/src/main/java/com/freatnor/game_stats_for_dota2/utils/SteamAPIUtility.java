@@ -15,6 +15,7 @@ import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatc
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.MatchHistoryResults;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchSequenceHistory.MatchSequence;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchSequenceHistory.MatchSequenceResult;
+import com.freatnor.game_stats_for_dota2.interfaces.APICallback;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -87,7 +88,7 @@ public class SteamAPIUtility  {
     }
 
     //method to get the list of matches for a player. Pass in 0 to get the default number of matches
-    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results,){
+    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + ACCOUNT_ID + account_id;
         if(num_results > 0){
@@ -107,10 +108,11 @@ public class SteamAPIUtility  {
                         Log.d(TAG, "onResponse: " + results.getResult().getNum_results());
 
                         if(results.getResult().hasMorePagedResults()){
-                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1)
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, callback);
                         }
                         else{
                             //TODO return the results in a callback
+                            callback.onMatchHistoryResponse(matchList);
                         }
                     }
                 },
@@ -130,7 +132,7 @@ public class SteamAPIUtility  {
     }
 
     //TODO helper method to iterate through the matches
-    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results, long latest_match_id){
+    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results, long latest_match_id, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + ACCOUNT_ID + account_id;
         if(num_results > 0){
@@ -153,7 +155,10 @@ public class SteamAPIUtility  {
                         Log.d(TAG, "onResponse: " + results.getResult().getNum_results());
 
                         if(results.getResult().hasMorePagedResults()){
-                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1);
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, callback);
+                        }
+                        else{
+                            callback.onMatchHistoryResponse(matchList);
                         }
                     }
                 },
