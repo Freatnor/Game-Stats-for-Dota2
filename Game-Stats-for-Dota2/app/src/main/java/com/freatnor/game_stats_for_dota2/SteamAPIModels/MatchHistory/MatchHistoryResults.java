@@ -1,4 +1,4 @@
-package com.freatnor.game_stats_for_dota2.SteamAPIModels;
+package com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory;
 
 import java.util.List;
 
@@ -6,28 +6,21 @@ import java.util.List;
  * Created by Jonathan Taylor on 9/1/16.
  */
 public class MatchHistoryResults {
-    private int result;
     private String statusDetail;
     private int num_results;
     private int total_results;
     private int results_remaining;
     private List<HistoryMatch> matches;
 
+    public MatchHistoryResults() {
+    }
+
     public MatchHistoryResults(int result, String statusDetail, int num_results, int total_results, int results_remaining, List<HistoryMatch> matches) {
-        this.result = result;
         this.statusDetail = statusDetail;
         this.num_results = num_results;
         this.total_results = total_results;
         this.results_remaining = results_remaining;
         this.matches = matches;
-    }
-
-    public int getResult() {
-        return result;
-    }
-
-    public void setResult(int result) {
-        this.result = result;
     }
 
     public String getStatusDetail() {
@@ -68,5 +61,25 @@ public class MatchHistoryResults {
 
     public void setMatches(List<HistoryMatch> matches) {
         this.matches = matches;
+    }
+
+    //parent wrapping object
+    public class MatchHistory{
+        private MatchHistoryResults result;
+
+        public MatchHistory() {
+        }
+
+        public MatchHistory(MatchHistoryResults result) {
+            this.result = result;
+        }
+
+        public MatchHistoryResults getResult() {
+            return result;
+        }
+
+        public void setResult(MatchHistoryResults result) {
+            this.result = result;
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.freatnor.game_stats_for_dota2.presenters;
 
-import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.freatnor.game_stats_for_dota2.Player;
-import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchPlayer;
 import com.freatnor.game_stats_for_dota2.R;
 import com.squareup.picasso.Picasso;
 

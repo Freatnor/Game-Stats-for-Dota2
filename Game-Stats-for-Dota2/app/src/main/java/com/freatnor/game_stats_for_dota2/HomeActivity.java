@@ -43,7 +43,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
                 "http://cdn.dota2.com/apps/dota2/images/items/invis_sword_lg.png", 3478, 3, 1, 24)));
 
         SteamAPIUtility utility = SteamAPIUtility.getInstance(this);
-        utility.getMatchHistoryForPlayer(players.get(0).mPlayerId);
+        utility.getMatchHistoryForPlayer(players.get(0).mPlayerId, 1);
         utility.getMatchDetail(2625097872L);
 
 
