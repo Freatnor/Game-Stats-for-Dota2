@@ -12,6 +12,8 @@ import com.android.volley.toolbox.Volley;
 import com.freatnor.game_stats_for_dota2.R;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.MatchHistoryResults;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchSequenceHistory.MatchSequence;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchSequenceHistory.MatchSequenceResult;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -127,6 +129,45 @@ public class SteamAPIUtility  {
                     public void onResponse(JSONObject response) {
                         // display response
                         Log.d("Response", response.toString());
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, " getMatchDetail Error.Response");
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+// add it to the RequestQueue
+        mRequestQueue.add(getRequest);
+        return null;
+    }
+
+
+
+    //Lookup all matches ever by match sequence
+    public MatchSequenceResult getMatchSequenceByAccountId(long starting_seq_id, int matches_requested){
+        String url = STEAM_API_BASE_URL + GET_MATCHES_BY_SEQUENCE + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key);
+        if(starting_seq_id > 0){
+            url += "&" + START_AT_MATCH_SEQ_NUM + starting_seq_id;
+        }
+        if(matches_requested > 0){
+            url += "&" + MATCHES_REQEUSTED_NUMBER + matches_requested;
+        }
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        Log.d("Response", response.toString());
+                        Gson gson = new Gson();
+                        MatchSequence sequence = gson.fromJson(response.toString(), MatchSequence.class);
+                        MatchSequenceResult result = sequence.getResult();
+                        Log.d(TAG, "onResponse: Match Sequence matches num " + result.getMatches().size());
                     }
                 },
                 new Response.ErrorListener()

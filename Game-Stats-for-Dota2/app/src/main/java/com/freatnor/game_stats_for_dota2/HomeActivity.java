@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         SteamAPIUtility utility = SteamAPIUtility.getInstance(this);
         utility.getMatchHistoryForPlayer(players.get(0).mPlayerId, 1);
         utility.getMatchDetail(2625097872L);
+        utility.getMatchSequenceByAccountId(10_000, 300);
 
 
         mAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
