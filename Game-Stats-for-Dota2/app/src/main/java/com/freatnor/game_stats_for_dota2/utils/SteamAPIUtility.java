@@ -23,6 +23,7 @@ import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.PlayerSumma
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.SteamPlayer;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.VanityUrlResult;
 import com.freatnor.game_stats_for_dota2.interfaces.APICallback;
+import com.freatnor.game_stats_for_dota2.interfaces.PlayerNameCallback;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;
@@ -479,6 +480,38 @@ public class SteamAPIUtility  {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         Log.d(TAG, " getMatchHistoryForPlayer Error.Response");
+                        error.printStackTrace();
+                    }
+                }
+        );
+        mRequestQueue.add(getRequest);
+    }
+
+    //for match detail views
+    private void getPlayerName(long account_id, final int index, final PlayerNameCallback callback){
+        String url = STEAM_USER_API_BASE_URL + USER_PROFILE + "?" + STEAM_API_KEY_PARAMETER +
+                mContext.getResources().getString(R.string.steam_api_key) +
+                "&" + STEAM_IDS_PARAMETER + convert32IdTo64(account_id);
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        Log.d("Response", response.toString());
+                        Gson gson = new Gson();
+                        PlayerSummaryResult.PlayerSummaryResultContainer container = gson.fromJson(
+                                response.toString(), PlayerSummaryResult.PlayerSummaryResultContainer.class);
+                        List<SteamPlayer> players = container.getResponse().getPlayers();
+                        callback.onPlayerNameResponse(players.get(0).getPersonaname(), index);
+
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, " getMatchDetail Error.Response");
                         error.printStackTrace();
                     }
                 }

@@ -15,6 +15,7 @@ import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchPlayer;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.SteamPlayer;
 import com.freatnor.game_stats_for_dota2.interfaces.APICallback;
+import com.freatnor.game_stats_for_dota2.interfaces.PlayerNameCallback;
 import com.freatnor.game_stats_for_dota2.presenters.MatchDetailsPlayerRecyclerViewAdapter;
 import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 
@@ -23,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MatchDetailActivity extends AppCompatActivity implements APICallback{
+public class MatchDetailActivity extends AppCompatActivity implements APICallback, PlayerNameCallback{
 
     private long mMatchId;
 
@@ -33,6 +34,9 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
     private RecyclerView mRadiantRecyclerView;
     private RecyclerView mDireRecyclerView;
 
+    private MatchDetailsPlayerRecyclerViewAdapter mRadiantAdapter;
+    private MatchDetailsPlayerRecyclerViewAdapter mDireAdapter;
+
     private LinearLayout mDireOverview;
     private LinearLayout mRadiantOverview;
 
@@ -40,7 +44,6 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
     private CardView mRadiantCard;
 
     private TextView mVictor;
-    private TextView mSkillBracket;
     private TextView mLobbyType;
     private TextView mMode;
     private TextView mDuration;
@@ -49,7 +52,7 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
     //radiant overview
     private TextView mRadiantKills;
     private TextView mRadiantDeaths;
-    private TextView mRadiantAssits;
+    private TextView mRadiantAssists;
     private TextView mRadiantTotalGold;
 
     //dire overview
@@ -64,7 +67,6 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
         setContentView(R.layout.activity_match_detail);
 
         mVictor = (TextView) findViewById(R.id.victor);
-        mSkillBracket = (TextView) findViewById(R.id.skill_bracket);
         mLobbyType = (TextView) findViewById(R.id.lobby_type);
         mMode = (TextView) findViewById(R.id.game_mode);
         mDuration = (TextView) findViewById(R.id.match_duration);
@@ -81,6 +83,16 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
         mRadiantOverview = (LinearLayout) findViewById(R.id.radiant_match_overview);
 
         //TODO radiant and dire overview textviews
+        
+        mRadiantKills = (TextView) findViewById(R.id.radiant_kills);
+        mRadiantDeaths = (TextView) findViewById(R.id.radiant_deaths);
+        mRadiantAssists = (TextView) findViewById(R.id.radiant_assists);
+        mRadiantTotalGold = (TextView) findViewById(R.id.radiant_total_gold);
+
+        mDireKills = (TextView) findViewById(R.id.dire_kills);
+        mDireDeaths = (TextView) findViewById(R.id.dire_deaths);
+        mDireAssists = (TextView) findViewById(R.id.dire_assists);
+        mDireTotalGold = (TextView) findViewById(R.id.dire_total_gold);
     }
 
     @Override
@@ -94,23 +106,6 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
         mUtility = SteamAPIUtility.getInstance(this);
         mUtility.getMatchDetail(mMatchId, this);
 
-        //Dummy Data
-        ArrayList<Player> players = new ArrayList<>();
-        players.add(new Player("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/0e/0e93c226aba775646e58357f188cbb687bc6a030_full.jpg",
-                "Freatnor", 1445123794, 76561198029057889l, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/juggernaut_lg.png", "Juggernaut",
-                "http://cdn.dota2.com/apps/dota2/images/items/phase_boots_lg.png", 2777, 8, 4,11)));
-        players.add(new Player("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/fd/fdcf3b4cecda9b90cff20ab35c58374d35fb517c_medium.jpg",
-                "RME", 1445123794, 76561197972714345l, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/slark_lg.png", "Slark",
-                "http://cdn.dota2.com/apps/dota2/images/items/invis_sword_lg.png", 3478, 3, 1, 24)));
-
-        mSkillBracket.setText("High");
-        mMode.setText("All Pick");
-        mLobbyType.setText("Solo Queue");
-        mDuration.setText(String.format("%d Minutes and %d Seconds", 2747 / 60, 2747 % 60));
-        //Finding the difference in time from the current and the start of match and showing it as a formatted date
-        Date start = new Date(1473122825);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
-        mMatchStart.setText(sdf.format(start));
 
         //OnClicks for toggling open or closed the recycler views
         mDireOverview.setOnClickListener(new View.OnClickListener() {
@@ -137,8 +132,11 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
             }
         });
 
-        mDireRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(players, MatchDetailsPlayerRecyclerViewAdapter.DIRE));
-        mRadiantRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(players, MatchDetailsPlayerRecyclerViewAdapter.RADIANT));
+        mRadiantAdapter = new MatchDetailsPlayerRecyclerViewAdapter(mUtility);
+        mDireAdapter = new MatchDetailsPlayerRecyclerViewAdapter(mUtility);
+
+        mDireRecyclerView.setAdapter(mRadiantAdapter);
+        mRadiantRecyclerView.setAdapter(mDireAdapter);
 
         mDireRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRadiantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -168,16 +166,165 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
         direPlayers.add(mMatchDetail.getPlayers().get(8));
         direPlayers.add(mMatchDetail.getPlayers().get(9));
 
-        mDireRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(direPlayers, MatchDetailsPlayerRecyclerViewAdapter.DIRE));
-        mRadiantRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(radiantPlayers, MatchDetailsPlayerRecyclerViewAdapter.RADIANT));
+        mRadiantAdapter.setPlayers(radiantPlayers);
+        mRadiantAdapter.notifyDataSetChanged();
 
-        mDireRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRadiantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mDireAdapter.setPlayers(direPlayers);
+        mDireAdapter.notifyDataSetChanged();
+
+        fillFields();
+    }
+
+    private void fillFields() {
+        String victor = mMatchDetail.isRadiant_win()? "Radiant" : "Dire";
+        mVictor.setText(String.format("%s Victory!", victor));
+        
+        mMode.setText(parseMode(mMatchDetail.getGame_mode()));
+        mLobbyType.setText(parseLobby(mMatchDetail.getLobby_type()));
+        mDuration.setText(String.format("%d Minutes and %d Seconds", mMatchDetail.getDuration() / 60,
+                mMatchDetail.getDuration() % 60));
+
+        //Finding the difference in time from the current and the start of match and showing it as a formatted date
+        Date start = new Date(mMatchDetail.getStart_time());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+        mMatchStart.setText(sdf.format(start));
+
+        fillRadiantBoard();
+        fillDireBoard();
+    }
+
+    private void fillDireBoard() {
+        mRadiantKills.setText(calculateKills(mMatchDetail.getPlayers().subList(0, 4)) + "");
+        mRadiantDeaths.setText(calculateDeaths(mMatchDetail.getPlayers().subList(0, 4))+ "");
+        mRadiantAssists.setText(calculateAssists(mMatchDetail.getPlayers().subList(0, 4))+"");
+        mRadiantTotalGold.setText(calculateTotalGold(mMatchDetail.getPlayers().subList(0, 4))+"");
+    }
+
+    private void fillRadiantBoard() {
+        mDireKills.setText(calculateKills(mMatchDetail.getPlayers().subList(5, 9)) + "");
+        mDireDeaths.setText(calculateDeaths(mMatchDetail.getPlayers().subList(5, 9))+ "");
+        mDireAssists.setText(calculateAssists(mMatchDetail.getPlayers().subList(5, 9))+"");
+        mDireTotalGold.setText(calculateTotalGold(mMatchDetail.getPlayers().subList(5, 9))+"");
+    }
+
+    private int calculateTotalGold(List<MatchPlayer> matchPlayers) {
+        int totalGold = 0;
+        for (int i = 0; i < matchPlayers.size(); i++) {
+            totalGold += matchPlayers.get(i).getTotalGold();
+        }
+        return totalGold;
+    }
+
+    private int calculateAssists(List<MatchPlayer> matchPlayers) {
+        int assists = 0;
+        for (int i = 0; i < matchPlayers.size(); i++) {
+            assists += matchPlayers.get(i).getAssists();
+        }
+        return assists;
+    }
+
+    private int calculateDeaths(List<MatchPlayer> matchPlayers) {
+        int deaths = 0;
+        for (int i = 0; i < matchPlayers.size(); i++) {
+            deaths += matchPlayers.get(i).getDeaths();
+        }
+        return deaths;
+    }
+
+    private int calculateKills(List<MatchPlayer> matchPlayers) {
+        int kills = 0;
+        for (int i = 0; i < matchPlayers.size(); i++) {
+            kills += matchPlayers.get(i).getKills();
+        }
+        return kills;
+    }
+
+    
+
+    //perhaps useful to move to a helper class later
+    private String parseLobby(int lobby_type) {
+        switch (lobby_type){
+            case 0:
+                return "Public matchmaking";
+            case 1:
+                return "Practise";
+            case 2:
+                return "Tournament";
+            case 3:
+                return "Tutorial";
+            case 4:
+                return "Co-op with bots.";
+            case 5:
+                return "Team match";
+            case 6:
+                return "Solo Queue";
+            case 7:
+                return "Ranked";
+            case 8:
+                return "1v1 Mid";
+            default:
+                return "Invalid";
+        }
+    }
+
+    //perhaps useful to move to a helper class later
+    private String parseMode(int game_mode) {
+        switch(game_mode) {
+            case 1:
+                return "All Pick";
+            case 2:
+                return "Captain's Mode";
+            case 3:
+                return "Random Draft";
+            case 4:
+                return "Single Draft";
+            case 5:
+                return "All Random";
+            case 6:
+                return "Intro";
+            case 7:
+                return "Diretide";
+            case 8:
+                return "Reverse Captain's Mode";
+            case 9:
+                return "The Greeviling";
+            case 10:
+                return "Tutorial";
+            case 11:
+                return "Mid Only";
+            case 12:
+                return "Least Played";
+            case 13:
+                return "New Player Pool";
+            case 14:
+                return "Compendium Matchmaking";
+            case 15:
+                return "Co-op vs Bots";
+            case 16:
+                return "Captains Draft";
+            case 18:
+                return "Ability Draft";
+            case 20:
+                return "All Random Deathmatch";
+            case 21:
+                return "1v1 Mid Only";
+            case 22:
+                return "Ranked Matchmaking";
+            default:
+                return "None";
+        }
 
     }
 
+    //useless here, perhaps callbacks should be refactored?
     @Override
     public void onPlayerSearchComplete(SteamPlayer player) {
+
+    }
+
+
+    @Override
+    public void onPlayerNameResponse(String name, int index) {
 
     }
 }

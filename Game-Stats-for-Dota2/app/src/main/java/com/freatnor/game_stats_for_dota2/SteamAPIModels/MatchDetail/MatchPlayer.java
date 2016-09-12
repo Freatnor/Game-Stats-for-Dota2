@@ -33,9 +33,13 @@ public class MatchPlayer {
     private int scaled_tower_damage;
     private int scaled_hero_healing;
 
+    private String playerName;
+
     private List<AbilityUpgrade> ability_upgrades;
 
     public MatchPlayer() {
+        //priming the value
+        playerName = "";
     }
 
     public long getAccount_id() {
@@ -256,6 +260,14 @@ public class MatchPlayer {
 
     public int getTotalGold(){
         return gold + gold_spent;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 }
 

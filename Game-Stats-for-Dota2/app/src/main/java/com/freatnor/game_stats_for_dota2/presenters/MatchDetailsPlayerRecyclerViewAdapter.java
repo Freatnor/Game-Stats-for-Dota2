@@ -9,10 +9,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.freatnor.game_stats_for_dota2.Player;
 import com.freatnor.game_stats_for_dota2.R;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchPlayer;
+import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,17 +23,13 @@ import java.util.List;
 public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<MatchDetailsPlayerViewHolder> {
     private static final String TAG = "MatchDetailsAdapter";
 
-    public static final int RADIANT = 1;
-    public static final int DIRE = 2;
+    private List<MatchPlayer> mPlayers;
 
-    //TODO change to list of real Player objects in the future
-    private List<Player> mPlayers;
-    //For if there's any parts distinct between dire and radiant
-    private int mSide;
+    private SteamAPIUtility mUtility;
 
-    public MatchDetailsPlayerRecyclerViewAdapter(List<Player> players, int side) {
-        mPlayers = players;
-        mSide = side;
+    public MatchDetailsPlayerRecyclerViewAdapter(SteamAPIUtility utility) {
+        mPlayers = new ArrayList<>();
+        mUtility = utility;
     }
 
     @Override
@@ -42,8 +40,8 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
 
     @Override
     public void onBindViewHolder(final MatchDetailsPlayerViewHolder holder, int position) {
-        Player player = mPlayers.get(position);
-        Log.d(TAG, "onBindViewHolder: Binding player " + player.mName);
+        MatchPlayer player = mPlayers.get(position);
+        Log.d(TAG, "onBindViewHolder: Binding player " + player.getPlayerName());
 
         //TODO update for correct access methods...
         /*holder.setHeroName(player.getHeroName());
@@ -62,23 +60,24 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.setItemIcon5(player.getItemIcon5);
         holder.setItemIcon6(player.getItemIcon6);*/
 
+        int heroId = player.getHero_id();
 
         //TEST CODE
-        holder.setHeroName(player.mLastPlayedMatch.mHeroName);
-        holder.setPlayerName(player.mName);
+        holder.setHeroName(mUtility.getHeroName(heroId));
+        holder.setPlayerName(player.getPlayerName());
 
-        holder.setKills(String.valueOf(player.mLastPlayedMatch.mKills));
-        holder.setDeaths(String.valueOf(player.mLastPlayedMatch.mDeaths));
-        holder.setAssists(String.valueOf(player.mLastPlayedMatch.mAssists));
-        holder.setNetGold(String.format("%dG", 234132));
+        holder.setKills(String.valueOf(player.getKills()));
+        holder.setDeaths(String.valueOf(player.getDeaths()));
+        holder.setAssists(String.valueOf(player.getAssists()));
+        holder.setNetGold(String.format("%dG", player.getTotalGold()));
 
-        holder.setHeroPortrait(player.mLastPlayedMatch.mHeroPortraitUrl);
-        holder.setItemIcon1(player.mLastPlayedMatch.mItemIconUrl);
-        holder.setItemIcon2(player.mLastPlayedMatch.mItemIconUrl);
-        holder.setItemIcon3(player.mLastPlayedMatch.mItemIconUrl);
-        holder.setItemIcon4(player.mLastPlayedMatch.mItemIconUrl);
-        holder.setItemIcon5(player.mLastPlayedMatch.mItemIconUrl);
-        holder.setItemIcon6(player.mLastPlayedMatch.mItemIconUrl);
+        holder.setHeroPortrait(mUtility.getHeroImageUrl(heroId));
+        holder.setItemIcon1(mUtility.getItemImageUrl(player.getItem_0()));
+        holder.setItemIcon2(mUtility.getItemImageUrl(player.getItem_1()));
+        holder.setItemIcon3(mUtility.getItemImageUrl(player.getItem_2()));
+        holder.setItemIcon4(mUtility.getItemImageUrl(player.getItem_3()));
+        holder.setItemIcon5(mUtility.getItemImageUrl(player.getItem_4()));
+        holder.setItemIcon6(mUtility.getItemImageUrl(player.getItem_5()));
 
         holder.setOverviewOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,6 +102,14 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
     @Override
     public int getItemCount() {
         return mPlayers.size();
+    }
+
+    public void setPlayerName(int index, String newName){
+        mPlayers.get(index).setPlayerName(newName);
+    }
+
+    public void setPlayers(List<MatchPlayer> players){
+        mPlayers = players;
     }
 }
 
@@ -219,4 +226,5 @@ class MatchDetailsPlayerViewHolder extends RecyclerView.ViewHolder{
     public void setNetGold(String netGold){
         mNetGold.setText(netGold);
     }
+
 }
