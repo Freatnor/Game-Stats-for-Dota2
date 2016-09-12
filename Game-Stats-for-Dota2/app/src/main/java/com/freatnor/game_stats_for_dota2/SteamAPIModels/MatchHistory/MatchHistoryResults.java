@@ -71,6 +71,10 @@ public class MatchHistoryResults {
         return matches.get(matches.size() - 1).getMatch_id();
     }
 
+    public long getLastMatchTimestamp(){
+        return matches.get(matches.size() - 1).getStart_time();
+    }
+
     //parent wrapping object
     public class MatchHistory{
         private MatchHistoryResults result;

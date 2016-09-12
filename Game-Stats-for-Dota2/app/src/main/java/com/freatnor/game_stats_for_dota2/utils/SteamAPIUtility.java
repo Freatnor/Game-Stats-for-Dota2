@@ -10,6 +10,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.freatnor.game_stats_for_dota2.R;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.Hero.Hero;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.Hero.HeroResult;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.Item.Item;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.Item.ItemResult;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.MatchHistoryResults;
@@ -22,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Jonathan Taylor on 9/8/16.
@@ -72,13 +77,22 @@ public class SteamAPIUtility  {
     private RequestQueue mRequestQueue;
     private Context mContext;
 
+    //reference maps for the heroes and items (stay up to date with the API)
+    private Map<Integer, Hero> mHeroMap;
+    private Map<Integer, Item> mItemMap;
+
     //Singleton stuff
     private static SteamAPIUtility sInstance;
 
     private SteamAPIUtility(Context context){
         mContext = context.getApplicationContext();
         mRequestQueue = Volley.newRequestQueue(mContext);
+
+        //initialize the hero and item maps
+        getHeroes();
+        getItems();
     }
+
 
     public static SteamAPIUtility getInstance(Context context){
         if(sInstance == null){
@@ -87,13 +101,79 @@ public class SteamAPIUtility  {
         return sInstance;
     }
 
+
+    private void getItems() {
+        String url = STEAM_API_BASE_URL + GET_ITEMS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key);
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        Log.d("Response", response.toString());
+                        Gson gson = new Gson();
+                        ItemResult.ItemResultContainer container = gson.fromJson(response.toString(),
+                                ItemResult.ItemResultContainer.class);
+                        List<Item> items = container.getResult().getItems();
+                        for (int i = 0; i < items.size(); i++) {
+                            mItemMap.put(items.get(i).getId(), items.get(i));
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, " getMatchDetail Error.Response - Unable to get Items List");
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+// add it to the RequestQueue
+        mRequestQueue.add(getRequest);
+    }
+
+    private void getHeroes() {
+        String url = STEAM_API_BASE_URL + GET_HEROES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key);
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        Log.d("Response", response.toString());
+                        Gson gson = new Gson();
+                        HeroResult.HeroResultContainer container = gson.fromJson(response.toString(),
+                                HeroResult.HeroResultContainer.class);
+                        List<Hero> heroes = container.getResult().getHeroes();
+                        for (int i = 0; i < heroes.size(); i++) {
+                            mHeroMap.put(heroes.get(i).getId(), heroes.get(i));
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, " getMatchDetail Error.Response - Unable to get Items List");
+                        error.printStackTrace();
+                    }
+                }
+        );
+
+// add it to the RequestQueue
+        mRequestQueue.add(getRequest);
+    }
+
     //method to get the list of matches for a player. Pass in 0 to get the default number of matches
     public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
-                "&" + ACCOUNT_ID + account_id;
+                "&" + ACCOUNT_ID + convert64IdTo32(account_id);
         if(num_results > 0){
             url += "&" + MATCHES_REQEUSTED_NUMBER + num_results;
         }
+        Log.d(TAG, "getMatchHistoryForPlayer: request url = " + url);
         final List<HistoryMatch> matchList = new ArrayList<>();
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
@@ -108,7 +188,7 @@ public class SteamAPIUtility  {
                         Log.d(TAG, "onResponse: " + results.getResult().getNum_results());
 
                         if(results.getResult().hasMorePagedResults()){
-                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, callback);
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, 0, callback);
                         }
                         else{
                             //TODO return the results in a callback
@@ -132,15 +212,24 @@ public class SteamAPIUtility  {
     }
 
     //TODO helper method to iterate through the matches
-    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results, long latest_match_id, final APICallback callback){
+    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results,
+                                                        long latest_match_id, final long max_unix_timestamp, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
-                "&" + ACCOUNT_ID + account_id;
+                "&" + ACCOUNT_ID + convert64IdTo32(account_id);
         if(num_results > 0){
             url += "&" + MATCHES_REQEUSTED_NUMBER + num_results;
         }
         if(latest_match_id < 1){
             //return the results so far;
         }
+        else{
+            url += "&" + START_AT_MATCH_ID + latest_match_id;
+        }
+        //if there's a timestamp include it to back in time!
+        if(max_unix_timestamp > 0){
+            url += "&" + DATE_MAX + max_unix_timestamp;
+        }
+        Log.d(TAG, "getMatchHistoryForPlayer: request url = " + url);
         final List<HistoryMatch> matchList = new ArrayList<>();
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
@@ -155,10 +244,15 @@ public class SteamAPIUtility  {
                         Log.d(TAG, "onResponse: " + results.getResult().getNum_results());
 
                         if(results.getResult().hasMorePagedResults()){
-                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, callback);
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, max_unix_timestamp, callback);
                         }
-                        else{
+                        //if there were no results from the last call return what we have
+                        else if(results.getResult().getTotal_results() < 500 && results.getResult().getResults_remaining() < 1){
                             callback.onMatchHistoryResponse(matchList);
+                        }
+                        //continue to earlier dates by taking one less than the last date and one less than the last match id
+                        else{
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, results.getResult().getLastMatchTimestamp() - 1, callback);
                         }
                     }
                 },
@@ -242,5 +336,13 @@ public class SteamAPIUtility  {
 // add it to the RequestQueue
         mRequestQueue.add(getRequest);
         return null;
+    }
+
+
+
+
+    //util method to convert the 64 bit ID to 32
+    public long convert64IdTo32(long id){
+        return id - 76561197960265728L;
     }
 }
