@@ -6,6 +6,7 @@ import java.util.List;
  * Created by Jonathan Taylor on 9/1/16.
  */
 public class MatchHistoryResults {
+    private int status;
     private String statusDetail;
     private int num_results;
     private int total_results;
@@ -15,12 +16,12 @@ public class MatchHistoryResults {
     public MatchHistoryResults() {
     }
 
-    public MatchHistoryResults(int result, String statusDetail, int num_results, int total_results, int results_remaining, List<HistoryMatch> matches) {
-        this.statusDetail = statusDetail;
-        this.num_results = num_results;
-        this.total_results = total_results;
-        this.results_remaining = results_remaining;
-        this.matches = matches;
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getStatusDetail() {

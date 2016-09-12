@@ -24,6 +24,7 @@ public class SteamPlayer {
 
     //For use in search results
     private MatchDetail mLatestMatch;
+    private boolean mUnableToSeeMatches = false;
 
     public SteamPlayer() {
     }
@@ -146,5 +147,13 @@ public class SteamPlayer {
 
     public void setLatestMatch(MatchDetail latestMatch) {
         mLatestMatch = latestMatch;
+    }
+
+    public boolean isUnableToSeeMatches() {
+        return mUnableToSeeMatches;
+    }
+
+    public void setUnableToSeeMatches(boolean unableToSeeMatches) {
+        mUnableToSeeMatches = unableToSeeMatches;
     }
 }

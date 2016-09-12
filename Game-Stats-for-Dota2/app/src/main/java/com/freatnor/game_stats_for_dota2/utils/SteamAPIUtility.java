@@ -395,8 +395,11 @@ public class SteamAPIUtility  {
                         PlayerSummaryResult.PlayerSummaryResultContainer container = gson.fromJson(
                                 response.toString(), PlayerSummaryResult.PlayerSummaryResultContainer.class);
                         List<SteamPlayer> players = container.getResponse().getPlayers();
+                        if(players.size() < 1){
+                            callback.onPlayerSearchComplete(null);
+                        }
                         for (int i = 0; i < players.size(); i++) {
-                            addLatestMatch(players.get(i), callback);
+                            findLatestMatch(players.get(i), callback);
                         }
                     }
                 },
@@ -409,14 +412,13 @@ public class SteamAPIUtility  {
                     }
                 }
         );
-
-// add it to the RequestQueue
         mRequestQueue.add(getRequest);
     }
 
-    private void addLatestMatch(final SteamPlayer steamPlayer, final APICallback callback) {
+    private void findLatestMatch(final SteamPlayer steamPlayer, final APICallback callback) {
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
-                "&" + ACCOUNT_ID + convert64IdTo32(steamPlayer.getSteamid());
+                "&" + ACCOUNT_ID + convert64IdTo32(steamPlayer.getSteamid()) +
+                "&" + MATCHES_REQEUSTED_NUMBER + 1;
 
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
@@ -429,8 +431,14 @@ public class SteamAPIUtility  {
                         MatchHistoryResults.MatchHistory results = gson.fromJson(response.toString(), MatchHistoryResults.MatchHistory.class);
 
                         Log.d(TAG, "onResponse: adding latest match has results_num = " + results.getResult().getNum_results());
+                        if(results.getResult().getStatus() == 15){
+                            //return the player with no matches and the unable to see matches field true
+                            steamPlayer.setUnableToSeeMatches(true);
+                            callback.onPlayerSearchComplete(steamPlayer);
+                        }
+                        addLatestMatch(steamPlayer, results.getResult().getLastMatchId(), callback);
 
-                        //TODO continued call to match detail to add to player object...
+
                     }
                 },
                 new Response.ErrorListener()
@@ -442,8 +450,39 @@ public class SteamAPIUtility  {
                     }
                 }
         );
+        mRequestQueue.add(getRequest);
+    }
 
-// add it to the RequestQueue
+    private void addLatestMatch(final SteamPlayer steamPlayer, long lastMatchId, final APICallback callback) {
+        String url = STEAM_API_BASE_URL + GET_MATCH_DETAILS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
+                "&" + MATCH_ID + lastMatchId;
+
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        Log.d("Response", response.toString());
+                        Gson gson = new Gson();
+                        MatchDetail.MatchDetailContainer results = gson.fromJson(response.toString(), MatchDetail.MatchDetailContainer.class);
+
+                        Log.d(TAG, "onResponse: adding latest match has results_num = " + results.getResult().getMatch_id());
+                        steamPlayer.setLatestMatch(results.getResult());
+                        callback.onPlayerSearchComplete(steamPlayer);
+
+
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, " getMatchHistoryForPlayer Error.Response");
+                        error.printStackTrace();
+                    }
+                }
+        );
         mRequestQueue.add(getRequest);
     }
 
