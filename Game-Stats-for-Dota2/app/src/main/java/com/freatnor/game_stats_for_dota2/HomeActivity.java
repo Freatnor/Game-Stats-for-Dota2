@@ -23,6 +23,7 @@ import com.freatnor.game_stats_for_dota2.presenters.SearchResultsRecyclerViewAda
 import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity implements MatchCallback, PlayerCallback, APICallback{
@@ -34,6 +35,11 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
     private SearchView mSearchView;
 
+    private SteamAPIUtility mUtility;
+
+    private List<SteamPlayer> searchPlayers;
+    private List<SteamPlayer> favoritedPlayers;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +48,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
         mRecyclerView = (RecyclerView) findViewById(R.id.followed_players_recycler_view);
 
-
+        searchPlayers = new LinkedList<>();
+        favoritedPlayers = new ArrayList<>();
     }
 
     @Override
@@ -58,10 +65,13 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
                 "RME", 1445123794, 76561197972714345L, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/slark_lg.png", "Slark",
                 "http://cdn.dota2.com/apps/dota2/images/items/invis_sword_lg.png", 3478, 3, 1, 24)));
 
-        SteamAPIUtility utility = SteamAPIUtility.getInstance(this);
-        utility.getMatchHistoryForPlayer(players.get(0).mPlayerId, 0, this);
-        utility.getMatchDetail(2625097872L, this);
-        utility.getMatchSequenceByAccountId(10_000, 300);
+        mUtility = SteamAPIUtility.getInstance(this);
+        //test code
+//        utility.getMatchHistoryForPlayer(players.get(0).mPlayerId, 0, this);
+//        utility.getMatchDetail(2625097872L, this);
+//        utility.getMatchSequenceByAccountId(10_000, 300);
+
+        //TODO get favorited players from SharedPrefs
 
 
         mAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
@@ -81,26 +91,17 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
         mSearchView.setQueryRefinementEnabled(true);
 
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                if (s != null) {
-                    if (s.isEmpty()) {
-                        ArrayList<Item> newItems = mHelper.getShopItems(null, null);
-                        mFragment.refreshItemList(newItems);
-                    } else {
-                        ArrayList<Item> newItems = mHelper.getItemsByName(s, null);
-                        mFragment.refreshItemList(newItems);
-                    }
-                }
-                return true;
-            }
-        });
+//        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String s) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String s) {
+//                return false;
+//            }
+//        });
         return true;
     }
 
@@ -119,6 +120,37 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 //        }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+
+        processSearchIntent(intent);
+    }
+
+    private void processSearchIntent(Intent intent) {
+
+        if(Intent.ACTION_SEARCH.equals(intent.getAction())){
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            //clear the old search results
+            searchPlayers.clear();
+            mUtility.getPlayerByName(query, this);
+            if(query.matches("^[0-9]*$")){
+                //figure out if the id passed in is a 32 or 64 id
+                long id64;
+                long id32;
+                long queryVal = Long.parseLong(query);
+                if(mUtility.convert64IdTo32(Long.parseLong(query)) < 0){
+                    id64 = mUtility.convert32IdTo64(queryVal);
+                    id32 = queryVal;
+                }
+                else {
+                    id32 = mUtility.convert64IdTo32(queryVal);
+                    id64 = queryVal;
+                }
+                mUtility.getPlayerById(new long[]{id64, id32}, this);
+            }
+        }
     }
 
     @Override
@@ -148,11 +180,10 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
     @Override
     public void onPlayerSearchComplete(SteamPlayer player) {
-
+        if(player != null){
+            searchPlayers.add(player);
+            //TODO add to and bind to adapter
+        }
     }
 
-    @Override
-    public void onPlayerSearchComplete() {
-
-    }
 }

@@ -373,7 +373,7 @@ public class SteamAPIUtility  {
         mRequestQueue.add(getRequest);
     }
 
-    private void getPlayerById(long[] steamids, final APICallback callback) {
+    public void getPlayerById(long[] steamids, final APICallback callback) {
         String url = STEAM_USER_API_BASE_URL + USER_PROFILE + "?" + STEAM_API_KEY_PARAMETER +
                 mContext.getResources().getString(R.string.steam_api_key);
         //if there are any arguments in steamids append the paramater key and then add the ids in a loop
