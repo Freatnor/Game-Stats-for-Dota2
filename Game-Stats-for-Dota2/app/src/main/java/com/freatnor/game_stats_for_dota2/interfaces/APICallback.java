@@ -2,6 +2,7 @@ package com.freatnor.game_stats_for_dota2.interfaces;
 
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.SteamPlayer;
 
 import java.util.List;
 
@@ -12,6 +13,6 @@ import java.util.List;
 public interface APICallback {
     void onMatchHistoryResponse(List<HistoryMatch> matches);
     void onMatchDetailResponse(MatchDetail matchDetail);
-    //TODO finish player search API callback
-    void onPlayerSearchComplete();
+    //null in player means no match
+    void onPlayerSearchComplete(SteamPlayer player);
 }
