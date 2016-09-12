@@ -60,6 +60,8 @@ public class SteamAPIUtility  {
 
     public static final String START_AT_MATCH_SEQ_NUM = "start_at_match_seq_num=";
 
+    public static final String LANGUAGE = "language=";
+
     //Used for user specific lookups
     public static final String STEAM_USER_API_BASE_URL = "http://api.steampowered.com/ISteamUser/";
 
@@ -71,7 +73,7 @@ public class SteamAPIUtility  {
     //Special urls for hero, ability, item images
     public static final String ITEM_IMAGE_URL = "http://cdn.dota2.com/apps/dota2/images/items/%s_lg.png";
     public static final String HERO_BASE_URL = "http://cdn.dota2.com/apps/dota2/images/heroes/";
-    public static final String HERO_LARGE_IMAGE_SUFFIX = "_lg.png";
+    public static final String LARGE_IMAGE_SUFFIX = "_lg.png";
     public static final String HERO_FULL_HORIZONTAL_SUFFIX = "_full.png";
 
     private RequestQueue mRequestQueue;
@@ -103,7 +105,8 @@ public class SteamAPIUtility  {
 
 
     private void getItems() {
-        String url = STEAM_API_BASE_URL + GET_ITEMS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key);
+        String url = STEAM_API_BASE_URL + GET_ITEMS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key)
+                + "?" + LANGUAGE + "en";
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
                 {
@@ -135,7 +138,8 @@ public class SteamAPIUtility  {
     }
 
     private void getHeroes() {
-        String url = STEAM_API_BASE_URL + GET_HEROES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key);
+        String url = STEAM_API_BASE_URL + GET_HEROES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key)
+                + "?" + LANGUAGE + "en";
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
                 {
@@ -162,12 +166,31 @@ public class SteamAPIUtility  {
                 }
         );
 
-// add it to the RequestQueue
         mRequestQueue.add(getRequest);
     }
 
+    public String getHeroImageUrl(int id){
+        String heroName = mHeroMap.get(id).getName().replace("npc_dota_hero_", "");
+        return HERO_BASE_URL + heroName + LARGE_IMAGE_SUFFIX;
+    }
+
+    public String getHeroName(int id){
+        return mHeroMap.get(id).getLocalized_name();
+    }
+
+    public String getItemImageUrl(int id){
+        String itemName = mItemMap.get(id).getName().replace("item_", "");
+        return ITEM_IMAGE_URL + itemName + LARGE_IMAGE_SUFFIX;
+    }
+
+    public String getItemName(int id){
+        return mItemMap.get(id).getLocalized_name();
+    }
+
+
+
     //method to get the list of matches for a player. Pass in 0 to get the default number of matches
-    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results, final APICallback callback){
+    public void getMatchHistoryForPlayer(final long account_id, final int num_results, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + ACCOUNT_ID + convert64IdTo32(account_id);
         if(num_results > 0){
@@ -208,11 +231,11 @@ public class SteamAPIUtility  {
 
 // add it to the RequestQueue
         mRequestQueue.add(getRequest);
-        return null;
     }
 
     //TODO helper method to iterate through the matches
-    public MatchHistoryResults getMatchHistoryForPlayer(final long account_id, final int num_results,
+    //Looks like the date_max field isn't working...
+    public void getMatchHistoryForPlayer(final long account_id, final int num_results,
                                                         long latest_match_id, final long max_unix_timestamp, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + ACCOUNT_ID + convert64IdTo32(account_id);
@@ -268,11 +291,10 @@ public class SteamAPIUtility  {
 
 // add it to the RequestQueue
         mRequestQueue.add(getRequest);
-        return null;
     }
 
-
-    public MatchDetail getMatchDetail(long match_id){
+    //method to return a match's details
+    public void getMatchDetail(long match_id, APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCH_DETAILS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&match_id=" + match_id;
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -282,6 +304,8 @@ public class SteamAPIUtility  {
                     public void onResponse(JSONObject response) {
                         // display response
                         Log.d("Response", response.toString());
+                        Gson gson = new Gson();
+                        MatchDetail
                     }
                 },
                 new Response.ErrorListener()
@@ -296,7 +320,6 @@ public class SteamAPIUtility  {
 
 // add it to the RequestQueue
         mRequestQueue.add(getRequest);
-        return null;
     }
 
 
