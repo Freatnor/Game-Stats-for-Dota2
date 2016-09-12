@@ -10,15 +10,25 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchPlayer;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.SteamPlayer;
+import com.freatnor.game_stats_for_dota2.interfaces.APICallback;
 import com.freatnor.game_stats_for_dota2.presenters.MatchDetailsPlayerRecyclerViewAdapter;
+import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-public class MatchDetailActivity extends AppCompatActivity {
+public class MatchDetailActivity extends AppCompatActivity implements APICallback{
 
-    private int mMatchId;
+    private long mMatchId;
+
+    private SteamAPIUtility mUtility;
+    private MatchDetail mMatchDetail;
 
     private RecyclerView mRadiantRecyclerView;
     private RecyclerView mDireRecyclerView;
@@ -79,8 +89,10 @@ public class MatchDetailActivity extends AppCompatActivity {
 
         //TODO get match details from API based on matchID from intent
         Intent intent = getIntent();
-        mMatchId = intent.getIntExtra(getString(R.string.match_id_key), -1);
+        mMatchId = intent.getLongExtra(getString(R.string.match_id_key), -1);
         ///...
+        mUtility = SteamAPIUtility.getInstance(this);
+        mUtility.getMatchDetail(mMatchId, this);
 
         //Dummy Data
         ArrayList<Player> players = new ArrayList<>();
@@ -131,6 +143,41 @@ public class MatchDetailActivity extends AppCompatActivity {
         mDireRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRadiantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+
+    }
+
+    @Override
+    public void onMatchHistoryResponse(List<HistoryMatch> matches) {
+
+    }
+
+    @Override
+    public void onMatchDetailResponse(MatchDetail matchDetail) {
+        mMatchDetail = matchDetail;
+        List<MatchPlayer> radiantPlayers = new ArrayList<>();
+        radiantPlayers.add(mMatchDetail.getPlayers().get(0));
+        radiantPlayers.add(mMatchDetail.getPlayers().get(1));
+        radiantPlayers.add(mMatchDetail.getPlayers().get(2));
+        radiantPlayers.add(mMatchDetail.getPlayers().get(3));
+        radiantPlayers.add(mMatchDetail.getPlayers().get(4));
+
+        List<MatchPlayer> direPlayers = new ArrayList<>();
+        direPlayers.add(mMatchDetail.getPlayers().get(5));
+        direPlayers.add(mMatchDetail.getPlayers().get(6));
+        direPlayers.add(mMatchDetail.getPlayers().get(7));
+        direPlayers.add(mMatchDetail.getPlayers().get(8));
+        direPlayers.add(mMatchDetail.getPlayers().get(9));
+
+        mDireRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(direPlayers, MatchDetailsPlayerRecyclerViewAdapter.DIRE));
+        mRadiantRecyclerView.setAdapter(new MatchDetailsPlayerRecyclerViewAdapter(radiantPlayers, MatchDetailsPlayerRecyclerViewAdapter.RADIANT));
+
+        mDireRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRadiantRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+    }
+
+    @Override
+    public void onPlayerSearchComplete(SteamPlayer player) {
 
     }
 }

@@ -7,6 +7,27 @@
     tools:context="com.freatnor.game_stats_for_dota2.HomeActivity">
 
     <LinearLayout
+        android:id="@+id/searched_players_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimaryDark"
+            android:padding="10dp"
+            android:text="@string/search_results"
+            android:textAlignment="center"
+            android:textSize="20sp" />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/searched_players_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/followed_players_section"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

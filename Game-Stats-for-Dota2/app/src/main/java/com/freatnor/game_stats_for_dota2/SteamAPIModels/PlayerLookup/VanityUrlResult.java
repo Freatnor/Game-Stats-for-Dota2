@@ -33,17 +33,17 @@ public class VanityUrlResult {
     }
 
     public class VanityUrlResultContainer{
-        private VanityUrlResult result;
+        private VanityUrlResult response;
 
         public VanityUrlResultContainer() {
         }
 
-        public VanityUrlResult getResult() {
-            return result;
+        public VanityUrlResult getResponse() {
+            return response;
         }
 
-        public void setResult(VanityUrlResult result) {
-            this.result = result;
+        public void getResponse(VanityUrlResult response) {
+            this.response = response;
         }
     }
 }

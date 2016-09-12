@@ -12,6 +12,8 @@ import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
@@ -30,8 +32,13 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
     private static final String TAG = "HomeActivity";
 
-    private SearchResultsRecyclerViewAdapter mAdapter;
-    private RecyclerView mRecyclerView;
+    private SearchResultsRecyclerViewAdapter mFollowedAdapter;
+    private RecyclerView mFollowedRecyclerView;
+
+    //search section
+    private SearchResultsRecyclerViewAdapter mSearchAdapter;
+    private RecyclerView mSearchRecyclerView;
+    private LinearLayout mSearchLayout;
 
     private SearchView mSearchView;
 
@@ -46,7 +53,9 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.followed_players_recycler_view);
+        mFollowedRecyclerView = (RecyclerView) findViewById(R.id.followed_players_recycler_view);
+        mSearchRecyclerView = (RecyclerView) findViewById(R.id.searched_players_recycler_view);
+        mSearchLayout = (LinearLayout) findViewById(R.id.searched_players_section);
 
         searchPlayers = new LinkedList<>();
         favoritedPlayers = new ArrayList<>();
@@ -74,9 +83,13 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         //TODO get favorited players from SharedPrefs
 
 
-        mAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mFollowedAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
+        mFollowedRecyclerView.setAdapter(mFollowedAdapter);
+        mFollowedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+        mSearchAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
+        mSearchRecyclerView.setAdapter(mSearchAdapter);
+        mSearchRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
 
     @Override
@@ -134,6 +147,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
             String query = intent.getStringExtra(SearchManager.QUERY);
             //clear the old search results
             searchPlayers.clear();
+            mSearchAdapter.clearPlayers();
             mUtility.getPlayerByName(query, this);
             if(query.matches("^[0-9]*$")){
                 //figure out if the id passed in is a 32 or 64 id
@@ -183,6 +197,21 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         if(player != null){
             searchPlayers.add(player);
             //TODO add to and bind to adapter
+            //mSearchAdapter.setPlayers(searchPlayers);
+            //dummy data
+            ArrayList<Player> players = new ArrayList<>();
+            players.add(new Player("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/0e/0e93c226aba775646e58357f188cbb687bc6a030_full.jpg",
+                    "Freatnor", 1445123794, 76561198029057889L, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/juggernaut_lg.png", "Juggernaut",
+                    "http://cdn.dota2.com/apps/dota2/images/items/phase_boots_lg.png", 2777, 8, 4,11)));
+            mSearchAdapter.setPlayers(players);
+            mSearchAdapter.notifyDataSetChanged();
+            if(mSearchLayout.getVisibility() == View.GONE){
+                mSearchLayout.setVisibility(View.VISIBLE);
+            }
+        }
+        //if the player returned is null check if there's no results and set the background to say there's no results
+        else if(searchPlayers.size() < 1){
+
         }
     }
 

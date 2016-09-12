@@ -7,4 +7,5 @@
     <string name="player_id_key">playerId</string>
     <string name="match_id_key">matchId</string>
     <string name="search">Search</string>
+    <string name="search_results">Search Results</string>
 </resources>

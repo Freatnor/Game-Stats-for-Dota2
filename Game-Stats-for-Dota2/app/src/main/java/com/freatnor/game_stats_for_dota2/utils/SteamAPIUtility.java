@@ -290,7 +290,7 @@ public class SteamAPIUtility  {
                         //TODO fix code when date_max gets fixed
                         /*
                         else{
-                            getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, results.getResult().getLastMatchTimestamp() - 1, callback);
+                            getMatchHistoryForPlayer(account_id, num_results, results.getResponse().getLastMatchId() - 1, results.getResponse().getLastMatchTimestamp() - 1, callback);
                         }
                         */
                     }
@@ -353,8 +353,8 @@ public class SteamAPIUtility  {
                         Gson gson = new Gson();
                         VanityUrlResult.VanityUrlResultContainer container = gson.fromJson(response.toString(),
                                 VanityUrlResult.VanityUrlResultContainer.class);
-                        if(!container.getResult().noMatch()) {
-                            getPlayerById(new long[]{container.getResult().getSteamid()}, callback);
+                        if(!container.getResponse().noMatch()) {
+                            getPlayerById(new long[]{container.getResponse().getSteamid()}, callback);
                         }
                         else {
                             callback.onPlayerSearchComplete(null);

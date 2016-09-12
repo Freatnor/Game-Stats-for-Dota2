@@ -96,6 +96,16 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
     public int getItemCount() {
         return mPlayers.size();
     }
+
+    public void clearPlayers(){
+        mPlayers.clear();
+    }
+
+    public void setPlayers(List<Player> players){
+        mPlayers = players;
+    }
+
+
 }
 
 class SearchResultsViewHolder extends RecyclerView.ViewHolder{
