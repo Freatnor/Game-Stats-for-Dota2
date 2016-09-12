@@ -79,6 +79,8 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.setItemIcon5(mUtility.getItemImageUrl(player.getItem_4()));
         holder.setItemIcon6(mUtility.getItemImageUrl(player.getItem_5()));
 
+//        holder.setColor(player.getPlayer_slot());
+
         holder.setOverviewOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -226,5 +228,18 @@ class MatchDetailsPlayerViewHolder extends RecyclerView.ViewHolder{
     public void setNetGold(String netGold){
         mNetGold.setText(netGold);
     }
+
+//    public void setColor(int player_slot){
+//        int colorid;
+//        if(player_slot > 5){
+//            colorid = R.color.direRed;
+//        }
+//        else {
+//            colorid = R.color.radiantGreen;
+//        }
+//        mPlayerOverviewSection.setBackgroundColor(mPlayerOverviewSection.getContext().getResources()
+//                .getColor(colorid));
+//
+//    }
 
 }

@@ -23,12 +23,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="3dp"
-            android:background="@color/radiantGreen"
             android:padding="10dp"
             app:cardCornerRadius="5dp"
             app:cardElevation="4dp">
 
             <LinearLayout
+                android:id="@+id/victory_background"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
@@ -124,7 +124,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/radiantGreen"
+            android:background="@color/radiantGreenDark"
             android:elevation="3dp"
             android:layout_marginTop="15dp">
             <TextView
@@ -215,6 +215,7 @@
             android:id="@+id/radiant_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/radiantGreen"
             android:visibility="gone">
 
             <android.support.v7.widget.RecyclerView
@@ -228,7 +229,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@color/direRed"
+            android:background="@color/direRedDark"
             android:elevation="3dp"
             android:layout_marginTop="15dp">
         <TextView
@@ -319,6 +320,7 @@
             android:id="@+id/dire_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/direRed"
             android:visibility="gone">
 
             <android.support.v7.widget.RecyclerView

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -26,6 +27,8 @@ import java.util.List;
 
 public class MatchDetailActivity extends AppCompatActivity implements APICallback, PlayerNameCallback{
 
+    private static final String TAG = "MatchDetailActivity";
+
     private long mMatchId;
 
     private SteamAPIUtility mUtility;
@@ -39,6 +42,7 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
 
     private LinearLayout mDireOverview;
     private LinearLayout mRadiantOverview;
+    private LinearLayout mVictoryBackground;
 
     private CardView mDireCard;
     private CardView mRadiantCard;
@@ -66,6 +70,7 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match_detail);
 
+        mVictoryBackground = (LinearLayout) findViewById(R.id.victory_background);
         mVictor = (TextView) findViewById(R.id.victor);
         mLobbyType = (TextView) findViewById(R.id.lobby_type);
         mMode = (TextView) findViewById(R.id.game_mode);
@@ -153,13 +158,21 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
     public void onMatchDetailResponse(MatchDetail matchDetail) {
         mMatchDetail = matchDetail;
         List<MatchPlayer> radiantPlayers = new ArrayList<>();
+        List<MatchPlayer> direPlayers = new ArrayList<>();
+
+        for (int i = 0; i < mMatchDetail.getPlayers().size(); i++) {
+            MatchPlayer player = mMatchDetail.getPlayers().get(i);
+            Log.d(TAG, "onMatchDetailResponse: player slot = " + player.getPlayer_slot() +
+                "and index = " + i);
+            if(true){}
+        }
         radiantPlayers.add(mMatchDetail.getPlayers().get(0));
+//        mUtility.getPlayerName(mMatchDetail.getPlayers().get(0));
         radiantPlayers.add(mMatchDetail.getPlayers().get(1));
         radiantPlayers.add(mMatchDetail.getPlayers().get(2));
         radiantPlayers.add(mMatchDetail.getPlayers().get(3));
         radiantPlayers.add(mMatchDetail.getPlayers().get(4));
 
-        List<MatchPlayer> direPlayers = new ArrayList<>();
         direPlayers.add(mMatchDetail.getPlayers().get(5));
         direPlayers.add(mMatchDetail.getPlayers().get(6));
         direPlayers.add(mMatchDetail.getPlayers().get(7));
@@ -245,7 +258,7 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
     private String parseLobby(int lobby_type) {
         switch (lobby_type){
             case 0:
-                return "Public matchmaking";
+                return "Public Matchmaking";
             case 1:
                 return "Practise";
             case 2:
@@ -255,7 +268,7 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
             case 4:
                 return "Co-op with bots.";
             case 5:
-                return "Team match";
+                return "Team Match";
             case 6:
                 return "Solo Queue";
             case 7:

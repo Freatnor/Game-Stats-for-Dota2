@@ -488,7 +488,7 @@ public class SteamAPIUtility  {
     }
 
     //for match detail views
-    private void getPlayerName(long account_id, final int index, final PlayerNameCallback callback){
+    public void getPlayerName(long account_id, final int index, final PlayerNameCallback callback){
         String url = STEAM_USER_API_BASE_URL + USER_PROFILE + "?" + STEAM_API_KEY_PARAMETER +
                 mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + STEAM_IDS_PARAMETER + convert32IdTo64(account_id);
