@@ -294,7 +294,7 @@ public class SteamAPIUtility  {
     }
 
     //method to return a match's details
-    public void getMatchDetail(long match_id, APICallback callback){
+    public void getMatchDetail(long match_id, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCH_DETAILS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&match_id=" + match_id;
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -305,7 +305,9 @@ public class SteamAPIUtility  {
                         // display response
                         Log.d("Response", response.toString());
                         Gson gson = new Gson();
-                        MatchDetail
+                        MatchDetail.MatchDetailContainer container = gson.fromJson(response.toString(),
+                                MatchDetail.MatchDetailContainer.class);
+                        callback.onMatchDetailResponse(container.getResult());
                     }
                 },
                 new Response.ErrorListener()

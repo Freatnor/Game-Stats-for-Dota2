@@ -208,9 +208,23 @@ public class MatchDetail {
         return players;
     }
 
-
-    //get the total gold
     public void setPlayers(List<MatchPlayer> players) {
         this.players = players;
+    }
+
+    //container json class
+    public class MatchDetailContainer{
+        private MatchDetail result;
+
+        public MatchDetailContainer() {
+        }
+
+        public MatchDetail getResult() {
+            return result;
+        }
+
+        public void setResult(MatchDetail result) {
+            this.result = result;
+        }
     }
 }
