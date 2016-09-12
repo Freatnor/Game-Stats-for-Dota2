@@ -25,6 +25,7 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class SteamAPIUtility  {
     //URL constants
     //Used for all but specific user lookups
     public static final String STEAM_API_BASE_URL = "https://api.steampowered.com/IDOTA2Match_570/";
+    public static final String STEAM_ECON_API_BASE_URL = "http://api.steampowered.com/IEconDOTA2_570/";
 
     //key parameter prefix
     public static final String STEAM_API_KEY_PARAMETER = "key=";
@@ -91,6 +93,8 @@ public class SteamAPIUtility  {
         mRequestQueue = Volley.newRequestQueue(mContext);
 
         //initialize the hero and item maps
+        mHeroMap = new HashMap<>();
+        mItemMap = new HashMap<>();
         getHeroes();
         getItems();
     }
@@ -105,8 +109,9 @@ public class SteamAPIUtility  {
 
 
     private void getItems() {
-        String url = STEAM_API_BASE_URL + GET_ITEMS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key)
-                + "?" + LANGUAGE + "en";
+        String url = STEAM_ECON_API_BASE_URL + GET_ITEMS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key)
+                + "&" + LANGUAGE + "en";
+        Log.d(TAG, "getItems: url for request " + url);
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
                 {
@@ -138,8 +143,8 @@ public class SteamAPIUtility  {
     }
 
     private void getHeroes() {
-        String url = STEAM_API_BASE_URL + GET_HEROES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key)
-                + "?" + LANGUAGE + "en";
+        String url = STEAM_ECON_API_BASE_URL + GET_HEROES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key)
+                + "&" + LANGUAGE + "en";
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>()
                 {
@@ -160,7 +165,7 @@ public class SteamAPIUtility  {
                 {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Log.d(TAG, " getMatchDetail Error.Response - Unable to get Items List");
+                        Log.d(TAG, " getMatchDetail Error.Response - Unable to get Heroes List");
                         error.printStackTrace();
                     }
                 }

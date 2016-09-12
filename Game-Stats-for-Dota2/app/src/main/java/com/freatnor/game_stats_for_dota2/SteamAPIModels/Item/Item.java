@@ -8,9 +8,9 @@ public class Item {
     private int id;
     private String name;
     private int cost;
-    private boolean secret_shop;
-    private boolean side_shop;
-    private boolean recipe;
+    private int secret_shop;
+    private int side_shop;
+    private int recipe;
     private String localized_name;
 
     public Item() {
@@ -40,27 +40,27 @@ public class Item {
         this.cost = cost;
     }
 
-    public boolean isSecret_shop() {
+    public int isSecret_shop() {
         return secret_shop;
     }
 
-    public void setSecret_shop(boolean secret_shop) {
+    public void setSecret_shop(int secret_shop) {
         this.secret_shop = secret_shop;
     }
 
-    public boolean isSide_shop() {
+    public int isSide_shop() {
         return side_shop;
     }
 
-    public void setSide_shop(boolean side_shop) {
+    public void setSide_shop(int side_shop) {
         this.side_shop = side_shop;
     }
 
-    public boolean isRecipe() {
+    public int isRecipe() {
         return recipe;
     }
 
-    public void setRecipe(boolean recipe) {
+    public void setRecipe(int recipe) {
         this.recipe = recipe;
     }
 
