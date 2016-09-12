@@ -531,4 +531,8 @@ public class SteamAPIUtility  {
     public long convert64IdTo32(long id){
         return id - 76561197960265728L;
     }
+
+    public long convert32IdTo64(long id){
+        return id + 76561197960265728L;
+    }
 }
