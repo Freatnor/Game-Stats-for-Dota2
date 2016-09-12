@@ -51,7 +51,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
         SteamAPIUtility utility = SteamAPIUtility.getInstance(this);
         utility.getMatchHistoryForPlayer(players.get(0).mPlayerId, 0, this);
-        utility.getMatchDetail(2625097872L);
+        utility.getMatchDetail(2625097872L, this);
         utility.getMatchSequenceByAccountId(10_000, 300);
 
 
@@ -81,7 +81,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
     @Override
     public void onMatchDetailResponse(MatchDetail matchDetail) {
-
+        Log.d(TAG, "onMatchDetailResponse: player = " + matchDetail.getHuman_players() + " and is radiant win = " +
+            matchDetail.isRadiant_win());
     }
 
     @Override

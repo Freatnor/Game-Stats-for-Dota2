@@ -249,9 +249,11 @@ public class SteamAPIUtility  {
             url += "&" + START_AT_MATCH_ID + latest_match_id;
         }
         //if there's a timestamp include it to back in time!
-        if(max_unix_timestamp > 0){
-            url += "&" + DATE_MAX + max_unix_timestamp;
-        }
+        //TODO fix code when date_max gets fixed
+//        if(max_unix_timestamp > 0){
+//            url += "&" + DATE_MAX + max_unix_timestamp;
+//        }
+
         Log.d(TAG, "getMatchHistoryForPlayer: request url = " + url);
         final List<HistoryMatch> matchList = new ArrayList<>();
         JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
@@ -273,10 +275,14 @@ public class SteamAPIUtility  {
                         else if(results.getResult().getTotal_results() < 500 && results.getResult().getResults_remaining() < 1){
                             callback.onMatchHistoryResponse(matchList);
                         }
+
                         //continue to earlier dates by taking one less than the last date and one less than the last match id
+                        //TODO fix code when date_max gets fixed
+                        /*
                         else{
                             getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, results.getResult().getLastMatchTimestamp() - 1, callback);
                         }
+                        */
                     }
                 },
                 new Response.ErrorListener()
@@ -322,6 +328,11 @@ public class SteamAPIUtility  {
 
 // add it to the RequestQueue
         mRequestQueue.add(getRequest);
+    }
+
+
+    public void getPlayerByName(String name){
+
     }
 
 
