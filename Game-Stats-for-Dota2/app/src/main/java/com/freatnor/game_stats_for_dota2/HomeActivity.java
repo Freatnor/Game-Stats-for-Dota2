@@ -1,14 +1,21 @@
 package com.freatnor.game_stats_for_dota2;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.SteamPlayer;
 import com.freatnor.game_stats_for_dota2.interfaces.APICallback;
 import com.freatnor.game_stats_for_dota2.interfaces.MatchCallback;
 import com.freatnor.game_stats_for_dota2.interfaces.PlayerCallback;
@@ -24,6 +31,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
     private SearchResultsRecyclerViewAdapter mAdapter;
     private RecyclerView mRecyclerView;
+
+    private SearchView mSearchView;
 
 
     @Override
@@ -61,6 +70,58 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.default_menu, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
+
+        ComponentName componentName = new ComponentName(this, this.getClass());
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));
+        mSearchView.setQueryRefinementEnabled(true);
+
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (s != null) {
+                    if (s.isEmpty()) {
+                        ArrayList<Item> newItems = mHelper.getShopItems(null, null);
+                        mFragment.refreshItemList(newItems);
+                    } else {
+                        ArrayList<Item> newItems = mHelper.getItemsByName(s, null);
+                        mFragment.refreshItemList(newItems);
+                    }
+                }
+                return true;
+            }
+        });
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void matchSelected(long matchId) {
         Intent intent = new Intent(HomeActivity.this, MatchDetailActivity.class);
         intent.putExtra(getString(R.string.match_id_key), matchId);
@@ -83,6 +144,11 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     public void onMatchDetailResponse(MatchDetail matchDetail) {
         Log.d(TAG, "onMatchDetailResponse: player = " + matchDetail.getHuman_players() + " and is radiant win = " +
             matchDetail.isRadiant_win());
+    }
+
+    @Override
+    public void onPlayerSearchComplete(SteamPlayer player) {
+
     }
 
     @Override
