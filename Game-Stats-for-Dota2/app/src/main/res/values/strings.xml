@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Game-Stats-for-Dota2</string>
+    <string name="app_name">Game Stats for Dota 2</string>
     <string name="last_played">Last Played:</string>
     <string name="duration">Duration:</string>
     <string name="date_played">Date Played:</string>
