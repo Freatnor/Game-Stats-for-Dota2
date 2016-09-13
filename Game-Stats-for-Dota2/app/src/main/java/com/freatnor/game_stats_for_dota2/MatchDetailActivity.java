@@ -164,20 +164,14 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
             MatchPlayer player = mMatchDetail.getPlayers().get(i);
             Log.d(TAG, "onMatchDetailResponse: player slot = " + player.getPlayer_slot() +
                 "and index = " + i);
-            if(true){}
+            if(i < 5){
+                radiantPlayers.add(player);
+            }
+            else {
+                direPlayers.add(player);
+            }
+            mUtility.getPlayerName(player.getAccount_id(), i, this);
         }
-        radiantPlayers.add(mMatchDetail.getPlayers().get(0));
-//        mUtility.getPlayerName(mMatchDetail.getPlayers().get(0));
-        radiantPlayers.add(mMatchDetail.getPlayers().get(1));
-        radiantPlayers.add(mMatchDetail.getPlayers().get(2));
-        radiantPlayers.add(mMatchDetail.getPlayers().get(3));
-        radiantPlayers.add(mMatchDetail.getPlayers().get(4));
-
-        direPlayers.add(mMatchDetail.getPlayers().get(5));
-        direPlayers.add(mMatchDetail.getPlayers().get(6));
-        direPlayers.add(mMatchDetail.getPlayers().get(7));
-        direPlayers.add(mMatchDetail.getPlayers().get(8));
-        direPlayers.add(mMatchDetail.getPlayers().get(9));
 
         mRadiantAdapter.setPlayers(radiantPlayers);
         mRadiantAdapter.notifyDataSetChanged();
@@ -338,6 +332,13 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
 
     @Override
     public void onPlayerNameResponse(String name, int index) {
-
+        if(index < 5){
+            mRadiantAdapter.setPlayerName(index, name);
+            mRadiantAdapter.notifyItemChanged(index);
+        }
+        else {
+            mDireAdapter.setPlayerName(index % 5, name);
+            mDireAdapter.notifyItemChanged(index % 5);
+        }
     }
 }

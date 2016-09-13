@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.freatnor.game_stats_for_dota2.Player;
 import com.freatnor.game_stats_for_dota2.R;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchPlayer;
+import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.SteamPlayer;
 import com.freatnor.game_stats_for_dota2.interfaces.MatchCallback;
 import com.freatnor.game_stats_for_dota2.interfaces.PlayerCallback;
 import com.squareup.picasso.Picasso;
@@ -25,12 +27,12 @@ import java.util.Locale;
  */
 public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<SearchResultsViewHolder>{
 
-    private List<Player> mPlayers;
+    private List<SteamPlayer> mPlayers;
 
     private MatchCallback mMatchCallback;
     private PlayerCallback mPlayerCallback;
 
-    public SearchResultsRecyclerViewAdapter(List<Player> players, MatchCallback matchCallback, PlayerCallback playerCallback) {
+    public SearchResultsRecyclerViewAdapter(List<SteamPlayer> players, MatchCallback matchCallback, PlayerCallback playerCallback) {
         mPlayers = players;
         mMatchCallback = matchCallback;
         mPlayerCallback = playerCallback;
@@ -44,7 +46,7 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
 
     @Override
     public void onBindViewHolder(final SearchResultsViewHolder holder, int position) {
-        Player player = mPlayers.get(position);
+        SteamPlayer player = mPlayers.get(position);
 
         //OnClick listener that either opens the bottom section or gives player object to callback
         //TODO change to correctly get the IDs
@@ -72,9 +74,10 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
             }
         });
 
+        MatchPlayer matchPlayer =  
 
         //TODO change these to use correct player object format from API
-        holder.setHeroName(mPlayers.get(position).mLastPlayedMatch.mHeroName);
+        holder.setHeroName(mPlayers.get(position).getLatestMatch().get);
         holder.setHeroPortrait(mPlayers.get(position).mLastPlayedMatch.mHeroPortraitUrl);
         holder.setItemIcon(mPlayers.get(position).mLastPlayedMatch.mItemIconUrl);
 
@@ -101,7 +104,7 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
         mPlayers.clear();
     }
 
-    public void setPlayers(List<Player> players){
+    public void setPlayers(List<SteamPlayer> players){
         mPlayers = players;
     }
 
