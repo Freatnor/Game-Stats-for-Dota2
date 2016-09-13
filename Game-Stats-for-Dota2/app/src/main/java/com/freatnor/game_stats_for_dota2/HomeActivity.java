@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +40,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     private SearchResultsRecyclerViewAdapter mSearchAdapter;
     private RecyclerView mSearchRecyclerView;
     private LinearLayout mSearchLayout;
+    private FloatingActionButton mSearchButton;
+    private MenuItem mSearchMenuItem;
 
     private SearchView mSearchView;
 
@@ -51,11 +54,19 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home);
+        setContentView(R.layout.activity_home_container);
 
         mFollowedRecyclerView = (RecyclerView) findViewById(R.id.followed_players_recycler_view);
         mSearchRecyclerView = (RecyclerView) findViewById(R.id.searched_players_recycler_view);
         mSearchLayout = (LinearLayout) findViewById(R.id.searched_players_section);
+
+        mSearchButton = (FloatingActionButton) findViewById(R.id.search_fab);
+        mSearchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSearchMenuItem.expandActionView();
+            }
+        });
 
         searchPlayers = new LinkedList<>();
         favoritedPlayers = new ArrayList<>();
@@ -98,7 +109,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         getMenuInflater().inflate(R.menu.default_menu, menu);
 
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        mSearchMenuItem = menu.findItem(R.id.search);
+        mSearchView = (SearchView) mSearchMenuItem.getActionView();
 
         ComponentName componentName = new ComponentName(this, this.getClass());
         mSearchView.setSearchableInfo(searchManager.getSearchableInfo(componentName));

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
     <include layout="@layout/activity_home"/>
 
@@ -12,6 +14,8 @@
         android:onClick="search"
         android:elevation="4dp"
         android:src="@drawable/ic_search_black_24dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:borderWidth="0dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_margin="20dp"/>
