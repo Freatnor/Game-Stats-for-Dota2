@@ -14,5 +14,5 @@ public interface APICallback {
     void onMatchHistoryResponse(List<HistoryMatch> matches);
     void onMatchDetailResponse(MatchDetail matchDetail);
     //null in player means no match
-    void onPlayerSearchComplete(SteamPlayer player);
+    void onPlayerSearchComplete(SteamPlayer player, boolean forSearch);
 }

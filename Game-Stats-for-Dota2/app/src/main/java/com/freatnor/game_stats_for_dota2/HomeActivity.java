@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,12 +27,15 @@ import com.freatnor.game_stats_for_dota2.presenters.SearchResultsRecyclerViewAda
 import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity implements MatchCallback, PlayerCallback, APICallback{
 
     private static final String TAG = "HomeActivity";
+    public static final String SHARED_FOLLOWED_LIST = "followed_list";
 
     private SearchResultsRecyclerViewAdapter mFollowedAdapter;
     private RecyclerView mFollowedRecyclerView;
@@ -85,7 +89,19 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 //        utility.getMatchDetail(2625097872L, this);
 //        utility.getMatchSequenceByAccountId(10_000, 300);
 
-        //TODO get favorited players from SharedPrefs
+
+        SharedPreferences sharedPrefs = getSharedPreferences(HomeActivity.SHARED_FOLLOWED_LIST, MODE_PRIVATE);
+        Set<String> followedList = sharedPrefs.getStringSet(HomeActivity.SHARED_FOLLOWED_LIST, null);
+        if(followedList != null){
+            long[] ids = new long[followedList.size()];
+            Iterator<String> iter = followedList.iterator();
+            int i = 0;
+            while(iter.hasNext()){
+                ids[i] = Long.parseLong(iter.next());
+                i++;
+            }
+            mUtility.getPlayerById(ids, this, false);
+        }
 
 
         mFollowedAdapter = new SearchResultsRecyclerViewAdapter(new ArrayList<SteamPlayer>(), this, this);
@@ -95,6 +111,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         mSearchAdapter = new SearchResultsRecyclerViewAdapter(new ArrayList<SteamPlayer>(), this, this);
         mSearchRecyclerView.setAdapter(mSearchAdapter);
         mSearchRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+
+
     }
 
     @Override
@@ -168,7 +186,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
                     id32 = mUtility.convert64IdTo32(queryVal);
                     id64 = queryVal;
                 }
-                mUtility.getPlayerById(new long[]{id64, id32}, this);
+                mUtility.getPlayerById(new long[]{id64, id32}, this, true);
             }
         }
     }
@@ -199,19 +217,29 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     }
 
     @Override
-    public void onPlayerSearchComplete(SteamPlayer player) {
-        if(player != null){
-            searchPlayers.add(player);
-            mSearchAdapter.setPlayers(searchPlayers);
-            mSearchAdapter.notifyDataSetChanged();
+    public void onPlayerSearchComplete(SteamPlayer player, boolean forSearch) {
+        if(forSearch) {
+            if (player != null) {
+                searchPlayers.add(player);
+                mSearchAdapter.setPlayers(searchPlayers);
+                mSearchAdapter.notifyDataSetChanged();
 
-            if(mSearchLayout.getVisibility() == View.GONE){
-                mSearchLayout.setVisibility(View.VISIBLE);
+                if (mSearchLayout.getVisibility() == View.GONE) {
+                    mSearchLayout.setVisibility(View.VISIBLE);
+                }
+            }
+            //if the player returned is null check if there's no results and set the background to say there's no results
+            else if (searchPlayers.size() < 1) {
+                //TODO add something to turn on a "no results" view in search results
             }
         }
-        //if the player returned is null check if there's no results and set the background to say there's no results
-        else if(searchPlayers.size() < 1){
-            //TODO add something to turn on a "no results" view in search results
+        //handle if it's the favorite calls
+        else {
+            if (player != null) {
+                favoritedPlayers.add(player);
+                mFollowedAdapter.setPlayers(favoritedPlayers);
+                mFollowedAdapter.notifyDataSetChanged();
+            }
         }
     }
 

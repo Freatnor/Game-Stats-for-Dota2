@@ -325,7 +325,7 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
 
     //useless here, perhaps callbacks should be refactored?
     @Override
-    public void onPlayerSearchComplete(SteamPlayer player) {
+    public void onPlayerSearchComplete(SteamPlayer player, boolean forSearch) {
 
     }
 

@@ -364,10 +364,11 @@ public class SteamAPIUtility  {
                         VanityUrlResult.VanityUrlResultContainer container = gson.fromJson(response.toString(),
                                 VanityUrlResult.VanityUrlResultContainer.class);
                         if(!container.getResponse().noMatch()) {
-                            getPlayerById(new long[]{container.getResponse().getSteamid()}, callback);
+                            getPlayerById(new long[]{container.getResponse().getSteamid()}, callback, true);
                         }
                         else {
-                            callback.onPlayerSearchComplete(null);
+                            //only called for player search
+                            callback.onPlayerSearchComplete(null, true);
                         }
                     }
                 },
@@ -383,7 +384,7 @@ public class SteamAPIUtility  {
         mRequestQueue.add(getRequest);
     }
 
-    public void getPlayerById(long[] steamids, final APICallback callback) {
+    public void getPlayerById(long[] steamids, final APICallback callback, final boolean forSearch) {
         String url = STEAM_USER_API_BASE_URL + USER_PROFILE + "?" + STEAM_API_KEY_PARAMETER +
                 mContext.getResources().getString(R.string.steam_api_key);
         //if there are any arguments in steamids append the paramater key and then add the ids in a loop
@@ -406,10 +407,10 @@ public class SteamAPIUtility  {
                                 response.toString(), PlayerSummaryResult.PlayerSummaryResultContainer.class);
                         List<SteamPlayer> players = container.getResponse().getPlayers();
                         if(players.size() < 1){
-                            callback.onPlayerSearchComplete(null);
+                            callback.onPlayerSearchComplete(null, forSearch);
                         }
                         for (int i = 0; i < players.size(); i++) {
-                            findLatestMatch(players.get(i), callback);
+                            findLatestMatch(players.get(i), callback, forSearch);
                         }
                     }
                 },
@@ -425,7 +426,7 @@ public class SteamAPIUtility  {
         mRequestQueue.add(getRequest);
     }
 
-    private void findLatestMatch(final SteamPlayer steamPlayer, final APICallback callback) {
+    private void findLatestMatch(final SteamPlayer steamPlayer, final APICallback callback, final boolean forSearch) {
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + ACCOUNT_ID + convert64IdTo32(steamPlayer.getSteamid()) +
                 "&" + MATCHES_REQEUSTED_NUMBER + 1;
@@ -444,9 +445,9 @@ public class SteamAPIUtility  {
                         if(results.getResult().getStatus() == 15){
                             //return the player with no matches and the unable to see matches field true
                             steamPlayer.setUnableToSeeMatches(true);
-                            callback.onPlayerSearchComplete(steamPlayer);
+                            callback.onPlayerSearchComplete(steamPlayer, forSearch);
                         }
-                        addLatestMatch(steamPlayer, results.getResult().getLastMatchId(), callback);
+                        addLatestMatch(steamPlayer, results.getResult().getLastMatchId(), callback, forSearch);
 
 
                     }
@@ -463,7 +464,7 @@ public class SteamAPIUtility  {
         mRequestQueue.add(getRequest);
     }
 
-    private void addLatestMatch(final SteamPlayer steamPlayer, long lastMatchId, final APICallback callback) {
+    private void addLatestMatch(final SteamPlayer steamPlayer, long lastMatchId, final APICallback callback, final boolean forSearch) {
         String url = STEAM_API_BASE_URL + GET_MATCH_DETAILS + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + MATCH_ID + lastMatchId;
 
@@ -479,7 +480,7 @@ public class SteamAPIUtility  {
 
                         Log.d(TAG, "onResponse: adding latest match has results_num = " + results.getResult().getMatch_id());
                         steamPlayer.setLatestMatch(results.getResult());
-                        callback.onPlayerSearchComplete(steamPlayer);
+                        callback.onPlayerSearchComplete(steamPlayer, forSearch);
 
 
                     }
