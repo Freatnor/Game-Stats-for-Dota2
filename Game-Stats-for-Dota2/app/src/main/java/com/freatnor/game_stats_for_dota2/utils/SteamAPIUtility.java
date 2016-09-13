@@ -79,7 +79,7 @@ public class SteamAPIUtility  {
     public static final String STEAM_IDS_PARAMETER = "steamids=";
 
     //Special urls for hero, ability, item images
-    public static final String ITEM_IMAGE_URL = "http://cdn.dota2.com/apps/dota2/images/items/%s_lg.png";
+    public static final String ITEM_IMAGE_URL = "http://cdn.dota2.com/apps/dota2/images/items/";
     public static final String HERO_BASE_URL = "http://cdn.dota2.com/apps/dota2/images/heroes/";
     public static final String LARGE_IMAGE_SUFFIX = "_lg.png";
     public static final String HERO_FULL_HORIZONTAL_SUFFIX = "_full.png";
@@ -182,7 +182,7 @@ public class SteamAPIUtility  {
 
     public String getHeroImageUrl(int id){
         String heroName = mHeroMap.get(id).getName().replace("npc_dota_hero_", "");
-        return HERO_BASE_URL + heroName + LARGE_IMAGE_SUFFIX;
+        return HERO_BASE_URL + heroName + HERO_FULL_HORIZONTAL_SUFFIX;
     }
 
     public String getHeroName(int id){
@@ -191,7 +191,10 @@ public class SteamAPIUtility  {
 
     public String getItemImageUrl(int id){
         String itemName = mItemMap.get(id).getName().replace("item_", "");
-        return ITEM_IMAGE_URL + itemName + LARGE_IMAGE_SUFFIX;
+        Log.d(TAG, "getItemImageUrl: trimmed item name - " + itemName);
+        String url = ITEM_IMAGE_URL + itemName + LARGE_IMAGE_SUFFIX;
+        Log.d(TAG, "getItemImageUrl: becomes - " + url);
+        return url;
     }
 
     public String getItemName(int id){

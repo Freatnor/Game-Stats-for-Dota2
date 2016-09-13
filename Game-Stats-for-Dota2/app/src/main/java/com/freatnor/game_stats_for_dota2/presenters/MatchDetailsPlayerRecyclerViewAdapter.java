@@ -84,12 +84,13 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
         holder.setOverviewOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!holder.itemsSectionIsToggled()){
-                    holder.toggleItemsSection();
-                }
-                else{
-                    //TODO add in the interface for getting to the player details
-                }
+//                if(!holder.itemsSectionIsToggled()){
+//                    holder.toggleItemsSection();
+//                }
+//                else{
+//                    //TODO add in the interface for getting to the player details
+//                }
+                holder.toggleItemsSection();
             }
         });
 
@@ -116,6 +117,7 @@ public class MatchDetailsPlayerRecyclerViewAdapter extends RecyclerView.Adapter<
 }
 
 class MatchDetailsPlayerViewHolder extends RecyclerView.ViewHolder{
+    private static final String TAG = "MatchDetailsViewHolder";
 
     private LinearLayout mPlayerOverviewSection;
     private LinearLayout mPlayerItemsSection;
@@ -161,6 +163,9 @@ class MatchDetailsPlayerViewHolder extends RecyclerView.ViewHolder{
         if(mPlayerItemsSection.getVisibility() == View.GONE){
             mPlayerItemsSection.setVisibility(View.VISIBLE);
         }
+        else{
+            mPlayerItemsSection.setVisibility(View.GONE);
+        }
     }
 
     public boolean itemsSectionIsToggled(){
@@ -181,26 +186,32 @@ class MatchDetailsPlayerViewHolder extends RecyclerView.ViewHolder{
 
     //methods to load images into itemicons via Picasso
     public void setItemIcon1(String url){
+        Log.d(TAG, "setItemIcon1: " + url);
         Picasso.with(mItemIcon1.getContext()).load(url).into(mItemIcon1);
     }
 
     public void setItemIcon2(String url){
+        Log.d(TAG, "setItemIcon2: " + url);
         Picasso.with(mItemIcon2.getContext()).load(url).into(mItemIcon2);
     }
 
     public void setItemIcon3(String url){
+        Log.d(TAG, "setItemIcon3: " + url);
         Picasso.with(mItemIcon3.getContext()).load(url).into(mItemIcon3);
     }
 
     public void setItemIcon4(String url){
+        Log.d(TAG, "setItemIcon4: " + url);
         Picasso.with(mItemIcon4.getContext()).load(url).into(mItemIcon4);
     }
 
     public void setItemIcon5(String url){
+        Log.d(TAG, "setItemIcon5: " + url);
         Picasso.with(mItemIcon5.getContext()).load(url).into(mItemIcon5);
     }
 
     public void setItemIcon6(String url){
+        Log.d(TAG, "setItemIcon6: " + url);
         Picasso.with(mItemIcon6.getContext()).load(url).into(mItemIcon6);
     }
 
