@@ -22,6 +22,7 @@ import com.squareup.picasso.Picasso;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Jonathan Taylor on 9/1/16.
@@ -110,8 +111,8 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
 
 
             //creating and setting the last played date for the player
-            Date lastPlayed = new Date(player.getLatestMatch().getStart_time());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+            Date lastPlayed = new Date(player.getLatestMatch().getStart_time() * 1000L);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z", Locale.US);
             holder.setLastPlayed(sdf.format(lastPlayed));
 
             holder.setResult(player.getLatestMatch().isRadiant_win() && matchPlayer.getPlayer_slot() < 5);

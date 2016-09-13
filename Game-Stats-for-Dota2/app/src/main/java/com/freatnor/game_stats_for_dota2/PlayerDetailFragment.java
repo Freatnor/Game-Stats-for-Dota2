@@ -142,8 +142,10 @@ public class PlayerDetailFragment extends Fragment implements PlayerDetailCallba
     public void onMatchHistoryReturned(List<HistoryMatch> matches) {
         mMatches = matches;
         mTotalGames.setText(String.valueOf(mMatches.size()));
+        Log.d(TAG, "onMatchHistoryReturned: the size of returned matches is " + mMatches.size());
         for (int i = 0; i < mMatches.size(); i++) {
             HistoryMatch match = mMatches.get(i);
+            Log.d(TAG, "onMatchHistoryReturned: requesting the detail for match " + match.getMatch_id());
             mUtility.getMatchDetail(match.getMatch_id(), this);
         }
 

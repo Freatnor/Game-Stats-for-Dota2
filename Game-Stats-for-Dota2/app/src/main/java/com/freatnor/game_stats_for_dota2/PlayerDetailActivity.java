@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
@@ -26,6 +27,7 @@ import java.util.Set;
 
 public class PlayerDetailActivity extends AppCompatActivity implements APICallback, PlayerFollowedListener,
         PlayerDetailRequest{
+    private static final String TAG = "PlayerDetailActivity";
 
     //TODO change to correct player + history type
     private SteamPlayer mPlayer;
@@ -91,6 +93,7 @@ public class PlayerDetailActivity extends AppCompatActivity implements APICallba
             Iterator<PlayerDetailCallback> iter = mCallbacks.iterator();
             while (iter.hasNext()) {
                 PlayerDetailCallback callback = iter.next();
+                Log.d(TAG, "onMatchHistoryResponse: callback " + callback + " getting matches of length " + mMatches.size());
                 if (callback != null) {
                     callback.onMatchHistoryReturned(mMatches);
                 }

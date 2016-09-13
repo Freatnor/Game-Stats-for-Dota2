@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MatchDetailActivity extends AppCompatActivity implements APICallback, PlayerNameCallback{
 
@@ -192,9 +193,12 @@ public class MatchDetailActivity extends AppCompatActivity implements APICallbac
                 mMatchDetail.getDuration() % 60));
 
         //Finding the difference in time from the current and the start of match and showing it as a formatted date
-        Date start = new Date(mMatchDetail.getStart_time());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
-        mMatchStart.setText(sdf.format(start));
+        Date start = new Date(mMatchDetail.getStart_time() * 1000L);
+        Log.d(TAG, "fillFields: start time in milliseconds" + mMatchDetail.getStart_time());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z", Locale.US);
+        String dateString = sdf.format(start);
+        Log.d(TAG, "fillFields: " + dateString);
+        mMatchStart.setText(dateString);
 
         fillRadiantBoard();
         fillDireBoard();
