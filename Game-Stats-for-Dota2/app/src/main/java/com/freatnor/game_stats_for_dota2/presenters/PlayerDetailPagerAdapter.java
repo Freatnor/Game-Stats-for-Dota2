@@ -22,7 +22,7 @@ public class PlayerDetailPagerAdapter extends FragmentPagerAdapter {
 
     public PlayerDetailPagerAdapter(FragmentManager fm, PlayerFollowedListener listener, PlayerDetailRequest request) {
         super(fm);
-        sections = new String[]{"Competitive", "Normal"};
+        sections = new String[]{"Competitive"};//, "Normal"};
         mListener = listener;
         mPlayerDetailRequest = request;
     }
