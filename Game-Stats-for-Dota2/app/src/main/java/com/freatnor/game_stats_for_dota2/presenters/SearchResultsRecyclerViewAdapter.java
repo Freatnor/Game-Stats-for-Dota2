@@ -1,5 +1,6 @@
 package com.freatnor.game_stats_for_dota2.presenters;
 
+import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,18 +10,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.freatnor.game_stats_for_dota2.Player;
 import com.freatnor.game_stats_for_dota2.R;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchPlayer;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.PlayerLookup.SteamPlayer;
 import com.freatnor.game_stats_for_dota2.interfaces.MatchCallback;
 import com.freatnor.game_stats_for_dota2.interfaces.PlayerCallback;
+import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by Jonathan Taylor on 9/1/16.
@@ -31,6 +31,8 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
 
     private MatchCallback mMatchCallback;
     private PlayerCallback mPlayerCallback;
+
+    private SteamAPIUtility mUtility;
 
     public SearchResultsRecyclerViewAdapter(List<SteamPlayer> players, MatchCallback matchCallback, PlayerCallback playerCallback) {
         mPlayers = players;
@@ -45,8 +47,12 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
     }
 
     @Override
-    public void onBindViewHolder(final SearchResultsViewHolder holder, int position) {
+    public void onBindViewHolder(final SearchResultsViewHolder holder, final int position) {
         SteamPlayer player = mPlayers.get(position);
+
+        if(mUtility == null){
+            mUtility = SteamAPIUtility.getInstance(holder.getContext());
+        }
 
         //OnClick listener that either opens the bottom section or gives player object to callback
         //TODO change to correctly get the IDs
@@ -60,7 +66,7 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
                     //mPlayerCallback.playerSelected(player.getId());
 
                     //dummy ID
-                    mPlayerCallback.playerSelected(12448617);
+                    mPlayerCallback.playerSelected(mPlayers.get(position).getSteamid());
                 }
             }
         });
@@ -70,29 +76,44 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
                 //mMatchCallback.matchSelected(player.getLatestMatch().getId());
 
                 //DummyID
-                mMatchCallback.matchSelected(2625097872l);
+                mMatchCallback.matchSelected(mPlayers.get(position).getLatestMatch().getMatch_id());
             }
         });
 
-        MatchPlayer matchPlayer =  
+        //get the correct matchPlayer for the match info
+        MatchPlayer matchPlayer = null;
+        for (int i = 0; i < player.getLatestMatch().getPlayers().size(); i++) {
+            long tempId = player.getLatestMatch().getPlayers().get(i).getAccount_id();
+            if(mUtility.convert32IdTo64(tempId) == player.getSteamid()){
+                matchPlayer = player.getLatestMatch().getPlayers().get(i);
+            }
+        }
 
-        //TODO change these to use correct player object format from API
-        holder.setHeroName(mPlayers.get(position).getLatestMatch().get);
-        holder.setHeroPortrait(mPlayers.get(position).mLastPlayedMatch.mHeroPortraitUrl);
-        holder.setItemIcon(mPlayers.get(position).mLastPlayedMatch.mItemIconUrl);
+        if(matchPlayer != null) {
+            //TODO change these to use correct player object format from API
+            holder.setHeroName(mUtility.getHeroName(matchPlayer.getHero_id()));
+            holder.setHeroPortrait(mUtility.getHeroImageUrl(matchPlayer.getHero_id()));
+            //set the image icons (the indexes are offset here...)
+            holder.setItemIcon1(mUtility.getItemImageUrl(matchPlayer.getItem_0()));
+            holder.setItemIcon2(mUtility.getItemImageUrl(matchPlayer.getItem_1()));
+            holder.setItemIcon3(mUtility.getItemImageUrl(matchPlayer.getItem_2()));
+            holder.setItemIcon4(mUtility.getItemImageUrl(matchPlayer.getItem_3()));
+            holder.setItemIcon5(mUtility.getItemImageUrl(matchPlayer.getItem_4()));
+            holder.setItemIcon6(mUtility.getItemImageUrl(matchPlayer.getItem_5()));
 
-        holder.setPlayerPortrait(mPlayers.get(position).mImageUrl);
-        holder.setPlayername(mPlayers.get(position).mName);
-        //creating and setting the last played date for the player
-        Date lastPlayed = new Date(mPlayers.get(position).mLastPlayed);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
-        holder.setLastPlayed(sdf.format(lastPlayed));
+            holder.setPlayerPortrait(player.getAvatarFull());
+            holder.setPlayername(player.getPersonaname());
+            //creating and setting the last played date for the player
+            Date lastPlayed = new Date(player.getLatestMatch().getStart_time());
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");
+            holder.setLastPlayed(sdf.format(lastPlayed));
 
-        holder.setResult(mPlayers.get(position).mLastPlayedMatch.mIsWin);
-        holder.setKDA(String.format("%d/%d/%d", mPlayers.get(position).mLastPlayedMatch.mKills,
-                mPlayers.get(position).mLastPlayedMatch.mAssists, mPlayers.get(position).mLastPlayedMatch.mDeaths));
-        holder.setMatchDuration(String.format("%d Minutes and %d Seconds", (mPlayers.get(position).mLastPlayedMatch.mDuration / 60),
-                (mPlayers.get(position).mLastPlayedMatch.mDuration % 60)));
+            holder.setResult(player.getLatestMatch().isRadiant_win() && matchPlayer.getPlayer_slot() < 5);
+            holder.setKDA(String.format("%d/%d/%d", matchPlayer.getKills(),
+                    matchPlayer.getAssists(), matchPlayer.getDeaths()));
+            holder.setMatchDuration(String.format("%d Minutes and %d Seconds", (player.getLatestMatch().getDuration() / 60),
+                    (player.getLatestMatch().getDuration() % 60)));
+        }
     }
 
     @Override
@@ -119,9 +140,12 @@ class SearchResultsViewHolder extends RecyclerView.ViewHolder{
 
     private ImageView mPlayerPortrait;
     private ImageView mHeroPortrait;
-    private ImageView mItemIcon;
-    //should be 5 more item icons here
-    //TODO add the 5 item icons left
+    private ImageView mItemIcon1;
+    private ImageView mItemIcon2;
+    private ImageView mItemIcon3;
+    private ImageView mItemIcon4;
+    private ImageView mItemIcon5;
+    private ImageView mItemIcon6;
 
     //Text Views
     private TextView mResult;
@@ -139,7 +163,7 @@ class SearchResultsViewHolder extends RecyclerView.ViewHolder{
 
         mPlayerPortrait = (ImageView) itemView.findViewById(R.id.player_icon);
         mHeroPortrait = (ImageView) itemView.findViewById(R.id.player_search_latest_match_hero_portrait);
-        mItemIcon = (ImageView) itemView.findViewById(R.id.player_search_item1);
+        mItemIcon1 = (ImageView) itemView.findViewById(R.id.player_search_item1);
 
         mResult = (TextView) itemView.findViewById(R.id.player_search_latest_match_result);
         mPlayerName = (TextView) itemView.findViewById(R.id.player_name);
@@ -152,7 +176,6 @@ class SearchResultsViewHolder extends RecyclerView.ViewHolder{
     }
 
     public void toggleBottom(){
-        //TODO method to toggle the bottom element to animate open
         if(mBottomLayout.getVisibility() == View.GONE) {
             mBottomLayout.setVisibility(View.VISIBLE);
         }
@@ -167,8 +190,28 @@ class SearchResultsViewHolder extends RecyclerView.ViewHolder{
     }
 
     //TODO take in 6 urls and load into
-    public void setItemIcon(String url){
-        Picasso.with(mTopLayout.getContext()).load(url).into(mItemIcon);
+    public void setItemIcon1(String url){
+        Picasso.with(mTopLayout.getContext()).load(url).into(mItemIcon1);
+    }
+
+    public void setItemIcon2(String url){
+        Picasso.with(mTopLayout.getContext()).load(url).into(mItemIcon2);
+    }
+
+    public void setItemIcon3(String url){
+        Picasso.with(mTopLayout.getContext()).load(url).into(mItemIcon3);
+    }
+
+    public void setItemIcon4(String url){
+        Picasso.with(mTopLayout.getContext()).load(url).into(mItemIcon4);
+    }
+
+    public void setItemIcon5(String url){
+        Picasso.with(mTopLayout.getContext()).load(url).into(mItemIcon5);
+    }
+
+    public void setItemIcon6(String url){
+        Picasso.with(mTopLayout.getContext()).load(url).into(mItemIcon6);
     }
 
     public void setPlayername(String name){
@@ -218,6 +261,10 @@ class SearchResultsViewHolder extends RecyclerView.ViewHolder{
     public void setBottomOnClick(View.OnClickListener listener){
         //TODO add method to add onclick to go to the match activity
         mBottomLayout.setOnClickListener(listener);
+    }
+
+    public Context getContext(){
+        return mTopLayout.getContext().getApplicationContext();
     }
 
 }
