@@ -79,7 +79,7 @@ public class PlayerDetailActivity extends AppCompatActivity implements APICallba
         long accountId = intent.getLongExtra(getString(R.string.player_id_key), -1);
         //TODO get the actual player object from the API with the account_id
         mUtility.getPlayerById(new long[]{accountId}, this, true);
-        mUtility.getMatchHistoryForPlayer(accountId, 0, this);
+        mUtility.getMatchHistoryForPlayer(accountId, 100, this);
 
     }
 
