@@ -81,12 +81,18 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
             }
         });
 
+        holder.setPlayerPortrait(player.getAvatarmedium().replace("https", "http").replace("medium", "full"));
+        Log.d("SearchAdapter", "onBindViewHolder: player avatar url = " + player.getAvatarmedium());
+        holder.setPlayername(player.getPersonaname());
+
         //get the correct matchPlayer for the match info
         MatchPlayer matchPlayer = null;
-        for (int i = 0; i < player.getLatestMatch().getPlayers().size(); i++) {
-            long tempId = player.getLatestMatch().getPlayers().get(i).getAccount_id();
-            if(mUtility.convert32IdTo64(tempId) == player.getSteamid()){
-                matchPlayer = player.getLatestMatch().getPlayers().get(i);
+        if(player.getLatestMatch() != null) {
+            for (int i = 0; i < player.getLatestMatch().getPlayers().size(); i++) {
+                long tempId = player.getLatestMatch().getPlayers().get(i).getAccount_id();
+                if (mUtility.convert32IdTo64(tempId) == player.getSteamid()) {
+                    matchPlayer = player.getLatestMatch().getPlayers().get(i);
+                }
             }
         }
 
@@ -102,9 +108,7 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
             holder.setItemIcon5(mUtility.getItemImageUrl(matchPlayer.getItem_4()));
             holder.setItemIcon6(mUtility.getItemImageUrl(matchPlayer.getItem_5()));
 
-            holder.setPlayerPortrait(player.getAvatarmedium().replace("https", "http").replace("medium", "full"));
-            Log.d("SearchAdapter", "onBindViewHolder: player avatar url = " + player.getAvatarmedium());
-            holder.setPlayername(player.getPersonaname());
+
             //creating and setting the last played date for the player
             Date lastPlayed = new Date(player.getLatestMatch().getStart_time());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd 'at' HH:mm:ss z");

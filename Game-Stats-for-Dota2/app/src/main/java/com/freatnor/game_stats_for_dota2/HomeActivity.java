@@ -52,7 +52,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     private SteamAPIUtility mUtility;
 
     private List<SteamPlayer> searchPlayers;
-    private List<SteamPlayer> favoritedPlayers;
+    private List<SteamPlayer> followedPlayers;
 
 
     @Override
@@ -73,7 +73,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         });
 
         searchPlayers = new LinkedList<>();
-        favoritedPlayers = new ArrayList<>();
+        followedPlayers = new ArrayList<>();
     }
 
     @Override
@@ -92,12 +92,14 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
 
         SharedPreferences sharedPrefs = getSharedPreferences(HomeActivity.SHARED_FOLLOWED_LIST, MODE_PRIVATE);
         Set<String> followedList = sharedPrefs.getStringSet(HomeActivity.SHARED_FOLLOWED_LIST, null);
+        Log.d(TAG, "onResume: " + (followedList == null));
         if(followedList != null){
             long[] ids = new long[followedList.size()];
             Iterator<String> iter = followedList.iterator();
             int i = 0;
             while(iter.hasNext()){
                 ids[i] = Long.parseLong(iter.next());
+                Log.d(TAG, "onResume: item " + i + " is id " + ids[i]);
                 i++;
             }
             mUtility.getPlayerById(ids, this, false);
@@ -236,8 +238,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         //handle if it's the favorite calls
         else {
             if (player != null) {
-                favoritedPlayers.add(player);
-                mFollowedAdapter.setPlayers(favoritedPlayers);
+                followedPlayers.add(player);
+                mFollowedAdapter.setPlayers(followedPlayers);
                 mFollowedAdapter.notifyDataSetChanged();
             }
         }

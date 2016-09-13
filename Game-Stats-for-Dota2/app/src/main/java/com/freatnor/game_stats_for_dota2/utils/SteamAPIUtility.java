@@ -227,14 +227,15 @@ public class SteamAPIUtility  {
                         Log.d("Response", response.toString());
                         Gson gson = new Gson();
                         MatchHistoryResults.MatchHistory results = gson.fromJson(response.toString(), MatchHistoryResults.MatchHistory.class);
-                        matchList.addAll(results.getResult().getMatches());
+                        if(results.getResult().getMatches() != null) {
+                            matchList.addAll(results.getResult().getMatches());
+                        }
                         Log.d(TAG, "onResponse: " + results.getResult().getNum_results());
 
                         if(results.getResult().hasMorePagedResults()){
                             getMatchHistoryForPlayer(account_id, num_results, results.getResult().getLastMatchId() - 1, 0, callback);
                         }
                         else{
-                            //TODO return the results in a callback
                             callback.onMatchHistoryResponse(matchList);
                         }
                     }
@@ -255,7 +256,7 @@ public class SteamAPIUtility  {
 
     //TODO helper method to iterate through the matches
     //Looks like the date_max field isn't working...
-    public void getMatchHistoryForPlayer(final long account_id, final int num_results,
+    private void getMatchHistoryForPlayer(final long account_id, final int num_results,
                                                         long latest_match_id, final long max_unix_timestamp, final APICallback callback){
         String url = STEAM_API_BASE_URL + GET_MATCHES + "?" + STEAM_API_KEY_PARAMETER + mContext.getResources().getString(R.string.steam_api_key) +
                 "&" + ACCOUNT_ID + convert64IdTo32(account_id);
@@ -447,7 +448,9 @@ public class SteamAPIUtility  {
                             steamPlayer.setUnableToSeeMatches(true);
                             callback.onPlayerSearchComplete(steamPlayer, forSearch);
                         }
-                        addLatestMatch(steamPlayer, results.getResult().getLastMatchId(), callback, forSearch);
+                        if(results.getResult().getMatches() != null) {
+                            addLatestMatch(steamPlayer, results.getResult().getLastMatchId(), callback, forSearch);
+                        }
 
 
                     }

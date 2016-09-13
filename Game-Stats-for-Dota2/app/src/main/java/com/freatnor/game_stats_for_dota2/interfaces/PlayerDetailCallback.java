@@ -10,6 +10,6 @@ import java.util.List;
  */
 public interface PlayerDetailCallback {
     void onPlayerReturned(SteamPlayer player);
-    void onMatchHistoryReturned(List<HistoryMatch> player);
+    void onMatchHistoryReturned(List<HistoryMatch> matches);
 
 }

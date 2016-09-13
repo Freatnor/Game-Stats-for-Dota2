@@ -68,6 +68,7 @@ public class MatchHistoryResults {
         return results_remaining > 0;
     }
 
+
     public long getLastMatchId(){
         return matches.get(matches.size() - 1).getMatch_id();
     }
