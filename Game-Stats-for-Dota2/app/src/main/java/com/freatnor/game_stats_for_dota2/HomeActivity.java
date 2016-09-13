@@ -94,11 +94,11 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         //TODO get favorited players from SharedPrefs
 
 
-        mFollowedAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
+        mFollowedAdapter = new SearchResultsRecyclerViewAdapter(new ArrayList<SteamPlayer>(), this, this);
         mFollowedRecyclerView.setAdapter(mFollowedAdapter);
         mFollowedRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
 
-        mSearchAdapter = new SearchResultsRecyclerViewAdapter(players, this, this);
+        mSearchAdapter = new SearchResultsRecyclerViewAdapter(new ArrayList<SteamPlayer>(), this, this);
         mSearchRecyclerView.setAdapter(mSearchAdapter);
         mSearchRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
     }
@@ -215,7 +215,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
             players.add(new Player("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/0e/0e93c226aba775646e58357f188cbb687bc6a030_full.jpg",
                     "Freatnor", 1445123794, 76561198029057889L, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/juggernaut_lg.png", "Juggernaut",
                     "http://cdn.dota2.com/apps/dota2/images/items/phase_boots_lg.png", 2777, 8, 4,11)));
-            mSearchAdapter.setPlayers(players);
+            mSearchAdapter.setPlayers(searchPlayers);
             mSearchAdapter.notifyDataSetChanged();
             if(mSearchLayout.getVisibility() == View.GONE){
                 mSearchLayout.setVisibility(View.VISIBLE);

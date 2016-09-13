@@ -164,6 +164,11 @@ class SearchResultsViewHolder extends RecyclerView.ViewHolder{
         mPlayerPortrait = (ImageView) itemView.findViewById(R.id.player_icon);
         mHeroPortrait = (ImageView) itemView.findViewById(R.id.player_search_latest_match_hero_portrait);
         mItemIcon1 = (ImageView) itemView.findViewById(R.id.player_search_item1);
+        mItemIcon2 = (ImageView) itemView.findViewById(R.id.player_search_item2);
+        mItemIcon3 = (ImageView) itemView.findViewById(R.id.player_search_item3);
+        mItemIcon4 = (ImageView) itemView.findViewById(R.id.player_search_item4);
+        mItemIcon5 = (ImageView) itemView.findViewById(R.id.player_search_item5);
+        mItemIcon6 = (ImageView) itemView.findViewById(R.id.player_search_item6);
 
         mResult = (TextView) itemView.findViewById(R.id.player_search_latest_match_result);
         mPlayerName = (TextView) itemView.findViewById(R.id.player_name);

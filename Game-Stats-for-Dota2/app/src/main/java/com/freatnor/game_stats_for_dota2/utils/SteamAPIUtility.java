@@ -190,6 +190,9 @@ public class SteamAPIUtility  {
     }
 
     public String getItemImageUrl(int id){
+        if(id < 1){
+            return "";
+        }
         String itemName = mItemMap.get(id).getName().replace("item_", "");
         Log.d(TAG, "getItemImageUrl: trimmed item name - " + itemName);
         String url = ITEM_IMAGE_URL + itemName + LARGE_IMAGE_SUFFIX;
@@ -198,6 +201,9 @@ public class SteamAPIUtility  {
     }
 
     public String getItemName(int id){
+        if(id < 1){
+            return "";
+        }
         return mItemMap.get(id).getLocalized_name();
     }
 
@@ -506,7 +512,12 @@ public class SteamAPIUtility  {
                         PlayerSummaryResult.PlayerSummaryResultContainer container = gson.fromJson(
                                 response.toString(), PlayerSummaryResult.PlayerSummaryResultContainer.class);
                         List<SteamPlayer> players = container.getResponse().getPlayers();
-                        callback.onPlayerNameResponse(players.get(0).getPersonaname(), index);
+                        if(players.size() > 0) {
+                            callback.onPlayerNameResponse(players.get(0).getPersonaname(), index);
+                        }
+                        else{
+                            callback.onPlayerNameResponse("Unknown", index);
+                        }
 
                     }
                 },
