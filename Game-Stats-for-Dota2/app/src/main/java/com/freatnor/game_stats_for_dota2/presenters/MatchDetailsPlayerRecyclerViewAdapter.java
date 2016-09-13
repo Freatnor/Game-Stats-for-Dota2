@@ -246,17 +246,5 @@ class MatchDetailsPlayerViewHolder extends RecyclerView.ViewHolder{
         mNetGold.setText(netGold);
     }
 
-//    public void setColor(int player_slot){
-//        int colorid;
-//        if(player_slot > 5){
-//            colorid = R.color.direRed;
-//        }
-//        else {
-//            colorid = R.color.radiantGreen;
-//        }
-//        mPlayerOverviewSection.setBackgroundColor(mPlayerOverviewSection.getContext().getResources()
-//                .getColor(colorid));
-//
-//    }
 
 }

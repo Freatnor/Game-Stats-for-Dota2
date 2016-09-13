@@ -208,22 +208,16 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     public void onPlayerSearchComplete(SteamPlayer player) {
         if(player != null){
             searchPlayers.add(player);
-            //TODO add to and bind to adapter
-            //mSearchAdapter.setPlayers(searchPlayers);
-            //dummy data
-            ArrayList<Player> players = new ArrayList<>();
-            players.add(new Player("https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/0e/0e93c226aba775646e58357f188cbb687bc6a030_full.jpg",
-                    "Freatnor", 1445123794, 76561198029057889L, new Match(false, "http://cdn.dota2.com/apps/dota2/images/heroes/juggernaut_lg.png", "Juggernaut",
-                    "http://cdn.dota2.com/apps/dota2/images/items/phase_boots_lg.png", 2777, 8, 4,11)));
             mSearchAdapter.setPlayers(searchPlayers);
             mSearchAdapter.notifyDataSetChanged();
+
             if(mSearchLayout.getVisibility() == View.GONE){
                 mSearchLayout.setVisibility(View.VISIBLE);
             }
         }
         //if the player returned is null check if there's no results and set the background to say there's no results
         else if(searchPlayers.size() < 1){
-
+            //TODO add something to turn on a "no results" view in search results
         }
     }
 

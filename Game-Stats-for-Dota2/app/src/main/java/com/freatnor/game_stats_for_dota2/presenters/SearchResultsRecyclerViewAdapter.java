@@ -3,6 +3,7 @@ package com.freatnor.game_stats_for_dota2.presenters;
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +102,8 @@ public class SearchResultsRecyclerViewAdapter extends RecyclerView.Adapter<Searc
             holder.setItemIcon5(mUtility.getItemImageUrl(matchPlayer.getItem_4()));
             holder.setItemIcon6(mUtility.getItemImageUrl(matchPlayer.getItem_5()));
 
-            holder.setPlayerPortrait(player.getAvatarFull());
+            holder.setPlayerPortrait(player.getAvatarmedium().replace("https", "http").replace("medium", "full"));
+            Log.d("SearchAdapter", "onBindViewHolder: player avatar url = " + player.getAvatarmedium());
             holder.setPlayername(player.getPersonaname());
             //creating and setting the last played date for the player
             Date lastPlayed = new Date(player.getLatestMatch().getStart_time());
