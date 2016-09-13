@@ -126,6 +126,7 @@ public class PlayerDetailActivity extends AppCompatActivity implements APICallba
         }
     }
 
+    //either creates a new list or toggles from the old list in shared prefs
     @Override
     public void onPlayerFollowed(long steamid) {
         SharedPreferences sharedPrefs = getSharedPreferences(HomeActivity.SHARED_FOLLOWED_LIST, MODE_PRIVATE);
@@ -140,6 +141,13 @@ public class PlayerDetailActivity extends AppCompatActivity implements APICallba
             }
             SharedPreferences.Editor e = sharedPrefs.edit();
             e.putStringSet(HomeActivity.SHARED_FOLLOWED_LIST, newList);
+            e.commit();
+        }
+        else{
+            Set<String> list = new HashSet<>();
+            list.add(String.valueOf(steamid));
+            SharedPreferences.Editor e = sharedPrefs.edit();
+            e.putStringSet(HomeActivity.SHARED_FOLLOWED_LIST, list);
             e.commit();
         }
     }

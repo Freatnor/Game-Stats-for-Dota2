@@ -27,9 +27,11 @@ import com.freatnor.game_stats_for_dota2.presenters.SearchResultsRecyclerViewAda
 import com.freatnor.game_stats_for_dota2.utils.SteamAPIUtility;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class HomeActivity extends AppCompatActivity implements MatchCallback, PlayerCallback, APICallback{
@@ -52,7 +54,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     private SteamAPIUtility mUtility;
 
     private List<SteamPlayer> searchPlayers;
-    private List<SteamPlayer> followedPlayers;
+    private Map<Long, SteamPlayer> followedPlayers;
 
 
     @Override
@@ -73,7 +75,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         });
 
         searchPlayers = new LinkedList<>();
-        followedPlayers = new ArrayList<>();
+        followedPlayers = new HashMap<>();
     }
 
     @Override
@@ -238,8 +240,8 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         //handle if it's the favorite calls
         else {
             if (player != null) {
-                followedPlayers.add(player);
-                mFollowedAdapter.setPlayers(followedPlayers);
+                followedPlayers.put(player.getSteamid(), player);
+                mFollowedAdapter.setPlayers(new ArrayList<SteamPlayer>(followedPlayers.values()));
                 mFollowedAdapter.notifyDataSetChanged();
             }
         }
