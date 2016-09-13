@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchDetail.MatchDetail;
 import com.freatnor.game_stats_for_dota2.SteamAPIModels.MatchHistory.HistoryMatch;
@@ -48,6 +49,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     private LinearLayout mSearchLayout;
     private FloatingActionButton mSearchButton;
     private MenuItem mSearchMenuItem;
+    private TextView mUnsuccessfulSearch;
 
     private SearchView mSearchView;
 
@@ -65,6 +67,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         mFollowedRecyclerView = (RecyclerView) findViewById(R.id.followed_players_recycler_view);
         mSearchRecyclerView = (RecyclerView) findViewById(R.id.searched_players_recycler_view);
         mSearchLayout = (LinearLayout) findViewById(R.id.searched_players_section);
+        mUnsuccessfulSearch = (TextView) findViewById(R.id.unsuccessful_search);
 
         mSearchButton = (FloatingActionButton) findViewById(R.id.search_fab);
         mSearchButton.setOnClickListener(new View.OnClickListener() {
@@ -83,6 +86,7 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
         super.onResume();
 
         mSearchLayout.setVisibility(View.GONE);
+        mUnsuccessfulSearch.setVisibility(View.GONE);
 
 
         mUtility = SteamAPIUtility.getInstance(this);
@@ -223,18 +227,19 @@ public class HomeActivity extends AppCompatActivity implements MatchCallback, Pl
     @Override
     public void onPlayerSearchComplete(SteamPlayer player, boolean forSearch) {
         if(forSearch) {
+            mSearchLayout.setVisibility(View.VISIBLE);
             if (player != null) {
                 searchPlayers.add(player);
                 mSearchAdapter.setPlayers(searchPlayers);
                 mSearchAdapter.notifyDataSetChanged();
 
-                if (mSearchLayout.getVisibility() == View.GONE) {
-                    mSearchLayout.setVisibility(View.VISIBLE);
-                }
+                mUnsuccessfulSearch.setVisibility(View.GONE);
+
             }
             //if the player returned is null check if there's no results and set the background to say there's no results
             else if (searchPlayers.size() < 1) {
                 //TODO add something to turn on a "no results" view in search results
+                mUnsuccessfulSearch.setVisibility(View.VISIBLE);
             }
         }
         //handle if it's the favorite calls
